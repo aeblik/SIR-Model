@@ -26,3 +26,8 @@ From the project root (where `requirements.txt` is located):
 `python -m ipykernel install --user --name sir-model --display-name "Python (sir-model)"`
 
 
+Reference for Covid Data
+https://www.idd.bag.admin.ch/diseases/covid/overview 
+
+Covid-19 SIR-model US:
+https://pmc.ncbi.nlm.nih.gov/articles/PMC8993010/#sec002 

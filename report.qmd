@@ -87,7 +87,7 @@ $$ 1. Susceptible (S) Equation: ∂t∂S​=−β⋅NS⋅I​
 This equation describes the rate at which the susceptible population density changes over time.
 
 |  |  |  |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | Term | Symbol/Component | Simple Explanation |
 | **Rate of Change of** S | ∂t∂S​ | **How quickly the density of susceptible individuals changes** over time. |
 | **Infection Rate (Loss of** S**)** | −β⋅NS⋅I​ | This is the **rate at which susceptible individuals become infected** and move out of the S compartment. Since S decreases due to infection, this term is negative. The rate depends on: |
@@ -99,7 +99,7 @@ This equation describes the rate at which the susceptible population density cha
 This equation is the core of the PDE system, showing how the infectious population density changes due to three processes: spreading, being infected, and recovering.
 
 |  |  |  |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | Term | Symbol/Component | Simple Explanation |
 | **Rate of Change of** I | ∂t∂I​ | **How quickly the density of infectious individuals changes** over time. |
 | **Spatial Diffusion** | Di​∇2I | This is the **diffusion term**, representing the **spatial spreading** or movement of infectious individuals across the region. Diffusion models movement from high density areas to low density areas. |
@@ -114,7 +114,7 @@ This equation is the core of the PDE system, showing how the infectious populati
 This equation describes the rate at which individuals enter the recovered population.
 
 |  |  |  |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | Term | Symbol/Component | Simple Explanation |
 | **Rate of Change of** R | ∂t∂R​ | **How quickly the density of recovered individuals changes** over time. |
 | **Recovery (Gain to** R**)** | +γ⋅I | This is the **gain** of new recovered individuals (coming from the I compartment). This is the same magnitude as the loss term in the I equation, but positive here. |
