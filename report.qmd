@@ -14,7 +14,7 @@ editor: visual
 3.  Make reasonable assumptions and choices and shortly explain your assumptions and choices:
     1.  What FD scheme is suited for the problem (Finite Difference Schema)
     2.  What BC is suited
-    3.  What IC makes sense
+    3.  What IC makes sense (data
         1.  Constants in the equations (e.g. diffusion constant, etc.)
 4.  Discretise the PDE using FD approximations
 5.  Analyse the step-wise order of the error of the FD approximation
@@ -42,7 +42,7 @@ Description: Simulate the spread of an infectious disease using the Partial Diff
 
 $$
 \begin{aligned}
-\frac{\partial S}{\partial t} &= -\beta \cdot \frac{S \cdot I}{N} \\
+\frac{\partial S}{\partial t} &= D_i\nabla^2 S -\beta \cdot \frac{S \cdot I}{N} \\
 \frac{\partial I}{\partial t} &= D_i\nabla^2 I + \beta \cdot \frac{S \cdot I}{N} - \gamma \cdot I \\
 \frac{\partial R}{\partial t} &= \gamma \cdot I
 \end{aligned}
@@ -54,13 +54,19 @@ $$
 
 -   I : Infectious individuals density (individuals /cm2)
 
--   R : Recovered individuals density (individuals /cm2)β : Transmission rate ( day −1)
+-   R : Recovered individuals density (individuals /cm2)
 
--   γ : Recovery rate ( day −1)N : Total population (22)
+-   β : Transmission rate ( day −1)
 
--   Di: Diffusion coefficient for I (cm2/ day ) (23)
+-   γ : Recovery rate ( day −1)
 
-**Typical values:**
+-   N : Total population
+
+-   Di: Diffusion coefficient for I (cm2/ day )
+
+-   Ds: Diffusion coefficient for S (cm2/ day )
+
+**Typical values: (Boundarys)**
 
 Ds = 0.01 − 0.1 cm2/ day,
 
@@ -87,7 +93,7 @@ $$ 1. Susceptible (S) Equation: ∂t∂S​=−β⋅NS⋅I​
 This equation describes the rate at which the susceptible population density changes over time.
 
 |  |  |  |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | Term | Symbol/Component | Simple Explanation |
 | **Rate of Change of** S | ∂t∂S​ | **How quickly the density of susceptible individuals changes** over time. |
 | **Infection Rate (Loss of** S**)** | −β⋅NS⋅I​ | This is the **rate at which susceptible individuals become infected** and move out of the S compartment. Since S decreases due to infection, this term is negative. The rate depends on: |
@@ -99,7 +105,7 @@ This equation describes the rate at which the susceptible population density cha
 This equation is the core of the PDE system, showing how the infectious population density changes due to three processes: spreading, being infected, and recovering.
 
 |  |  |  |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | Term | Symbol/Component | Simple Explanation |
 | **Rate of Change of** I | ∂t∂I​ | **How quickly the density of infectious individuals changes** over time. |
 | **Spatial Diffusion** | Di​∇2I | This is the **diffusion term**, representing the **spatial spreading** or movement of infectious individuals across the region. Diffusion models movement from high density areas to low density areas. |
@@ -114,7 +120,7 @@ This equation is the core of the PDE system, showing how the infectious populati
 This equation describes the rate at which individuals enter the recovered population.
 
 |  |  |  |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | Term | Symbol/Component | Simple Explanation |
 | **Rate of Change of** R | ∂t∂R​ | **How quickly the density of recovered individuals changes** over time. |
 | **Recovery (Gain to** R**)** | +γ⋅I | This is the **gain** of new recovered individuals (coming from the I compartment). This is the same magnitude as the loss term in the I equation, but positive here. |
