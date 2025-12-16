@@ -1,1 +1,10 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.css
+*.woff
+*.js
+*.html
+
 sir-model/

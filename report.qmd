@@ -1,0 +1,128 @@
+---
+title: "SIR-Model"
+author: "Abeli Kai Graham Noirin"
+format: html
+editor: visual
+---
+
+## Epidemiological Modeling: SIR Model
+
+**General Information** The steps, calculations, results, and code of your projects are to be documented in a report. The following points have to be done/answered in any case (points with an \* are optional)
+
+1.  Classify the PDE
+2.  Try to find some information about the PDE and describe it shortly
+3.  Make reasonable assumptions and choices and shortly explain your assumptions and choices:
+    1.  What FD scheme is suited for the problem (Finite Difference Schema)
+    2.  What BC is suited
+    3.  What IC makes sense
+        1.  Constants in the equations (e.g. diffusion constant, etc.)
+4.  Discretise the PDE using FD approximations
+5.  Analyse the step-wise order of the error of the FD approximation
+6.  Solve the PDE (for time-dependent PDEs, i.e. you observe how it changes after a certain time)
+7.  Investigate the stability of the scheme (in the case of non-linear PDEs you may simply investigate stability in an experimental fashion)
+8.  Play around with different values of the coefficients.
+9.  Visualise the solution(s)
+10. \* Solve the PDE using various schemes and compare them
+11. \* Make an error estimation for one of the solutions
+
+Comments
+
+-   in some of the equations: The laplace-operator ∆ = ∇2 is defined in two dimensions as
+
+$$
+∇^2 = \partial_{xx} + \partial{yy}
+, \\
+, i.e. e.g. \\
+𝚫_u = u_{xx}+u_{yy}
+$$ • Tasks with an asterisk \* are optional. • Integrals turn into sums in a discretised world
+
+### Task:
+
+Description: Simulate the spread of an infectious disease using the Partial Differential Equation (PDE) version of the Susceptible-Infectious-Recovered (SIR) model. Explore the impact of transmission and recovery rates on the spatial dynamics of the epidemic.
+
+$$
+\begin{aligned}
+\frac{\partial S}{\partial t} &= -\beta \cdot \frac{S \cdot I}{N} \\
+\frac{\partial I}{\partial t} &= D_i\nabla^2 I + \beta \cdot \frac{S \cdot I}{N} - \gamma \cdot I \\
+\frac{\partial R}{\partial t} &= \gamma \cdot I
+\end{aligned}
+$$
+
+**Parameters and Variables:**
+
+-   S : Susceptible individuals density (individuals /cm2)
+
+-   I : Infectious individuals density (individuals /cm2)
+
+-   R : Recovered individuals density (individuals /cm2)β : Transmission rate ( day −1)
+
+-   γ : Recovery rate ( day −1)N : Total population (22)
+
+-   Di: Diffusion coefficient for I (cm2/ day ) (23)
+
+**Typical values:**
+
+Ds = 0.01 − 0.1 cm2/ day,
+
+Di = 0.01 − 0.1 cm2/ day,
+
+β = 0.1 − 0.5 day −1,
+
+γ = 0.05 − 0.2 day −1,
+
+N = 1000 − 5000
+
+### Theory:
+
+Description of the PED:
+
+$$
+\begin{aligned}
+\frac{\partial S}{\partial t} &= -\beta \cdot \frac{S \cdot I}{N} \\
+\frac{\partial I}{\partial t} &= D_i\nabla^2 I + \beta \cdot \frac{S \cdot I}{N} - \gamma \cdot I \\
+\frac{\partial R}{\partial t} &= \gamma \cdot I
+\end{aligned}
+$$ 1. Susceptible (S) Equation: ∂t∂S​=−β⋅NS⋅I​
+
+This equation describes the rate at which the susceptible population density changes over time.
+
+|  |  |  |
+|----|----|----|
+| Term | Symbol/Component | Simple Explanation |
+| **Rate of Change of** S | ∂t∂S​ | **How quickly the density of susceptible individuals changes** over time. |
+| **Infection Rate (Loss of** S**)** | −β⋅NS⋅I​ | This is the **rate at which susceptible individuals become infected** and move out of the S compartment. Since S decreases due to infection, this term is negative. The rate depends on: |
+|  | β | The **Transmission rate** (how fast the disease spreads upon contact). |
+|  | S⋅I/N | The probability of interaction between susceptible (S) and infectious (I) individuals, normalized by the total population (N). |
+
+2\. Infectious (I) Equation: ∂t∂I​=Di​∇2I+β⋅NS⋅I​−γ⋅I
+
+This equation is the core of the PDE system, showing how the infectious population density changes due to three processes: spreading, being infected, and recovering.
+
+|  |  |  |
+|----|----|----|
+| Term | Symbol/Component | Simple Explanation |
+| **Rate of Change of** I | ∂t∂I​ | **How quickly the density of infectious individuals changes** over time. |
+| **Spatial Diffusion** | Di​∇2I | This is the **diffusion term**, representing the **spatial spreading** or movement of infectious individuals across the region. Diffusion models movement from high density areas to low density areas. |
+|  | Di​ | The **Diffusion coefficient** for I, determining the speed of this spatial movement. |
+|  | ∇2I | The **Laplace operator**, quantifying spatial curvature, or how the infectious density changes with respect to surrounding space. |
+| **New Infections (Gain to** I**)** | +β⋅NS⋅I​ | This is the **gain** of new infectious individuals (coming from the S compartment). This is the same magnitude as the loss term in the S equation, but positive here. |
+| **Recovery Rate (Loss of** I**)** | −γ⋅I | This is the **rate at which infectious individuals recover** and leave the I compartment. Since I decreases due to recovery, this term is negative. |
+|  | γ | The **Recovery rate** (how fast individuals leave the infectious state). |
+
+3\. Recovered (R) Equation: ∂t∂R​=γ⋅I
+
+This equation describes the rate at which individuals enter the recovered population.
+
+|  |  |  |
+|----|----|----|
+| Term | Symbol/Component | Simple Explanation |
+| **Rate of Change of** R | ∂t∂R​ | **How quickly the density of recovered individuals changes** over time. |
+| **Recovery (Gain to** R**)** | +γ⋅I | This is the **gain** of new recovered individuals (coming from the I compartment). This is the same magnitude as the loss term in the I equation, but positive here. |
+
+### What model is it:
+
+A **Standard (Non-Spatial) SIR Model** tracks the progression of a disease within a single, homogeneous population solely over **time**,. These models describe individuals moving between susceptible (S), infectious (I), and recovered (R) states using kinetic terms, often expressed using Ordinary Differential Equations (ODEs) or Discrete Difference Equations.
+
+A **Reaction-Diffusion System** is a mathematical classification for complex phenomena described by Partial Differential Equations (PDEs) that depend on both time and space,. This system combines two components: **Reaction** (local changes, representing kinetic transitions or biological feedback loops) and **Diffusion** (spatial transport or spreading from areas of high concentration to low concentration,).
+
+A **Spatial SIR Model** is explicitly an example of a Reaction-Diffusion system. The key difference is that the Spatial SIR incorporates spatial variables into its equations, simulating disease spread over **time AND space**. The inherent disease dynamics are the "reaction" part, while the spread of infectious individuals across a geographic region (via the ∇2 term) is the "diffusion" part, requiring PDEs for its formulation.
