@@ -14,7 +14,7 @@ editor: visual
 3.  Make reasonable assumptions and choices and shortly explain your assumptions and choices:
     1.  What FD scheme is suited for the problem (Finite Difference Schema)
     2.  What BC is suited
-    3.  What IC makes sense
+    3.  What IC makes sense (data
         1.  Constants in the equations (e.g. diffusion constant, etc.)
 4.  Discretise the PDE using FD approximations
 5.  Analyse the step-wise order of the error of the FD approximation
@@ -42,7 +42,7 @@ Description: Simulate the spread of an infectious disease using the Partial Diff
 
 $$
 \begin{aligned}
-\frac{\partial S}{\partial t} &= -\beta \cdot \frac{S \cdot I}{N} \\
+\frac{\partial S}{\partial t} &= D_i\nabla^2 S -\beta \cdot \frac{S \cdot I}{N} \\
 \frac{\partial I}{\partial t} &= D_i\nabla^2 I + \beta \cdot \frac{S \cdot I}{N} - \gamma \cdot I \\
 \frac{\partial R}{\partial t} &= \gamma \cdot I
 \end{aligned}
@@ -54,13 +54,19 @@ $$
 
 -   I : Infectious individuals density (individuals /cm2)
 
--   R : Recovered individuals density (individuals /cm2)β : Transmission rate ( day −1)
+-   R : Recovered individuals density (individuals /cm2)
 
--   γ : Recovery rate ( day −1)N : Total population (22)
+-   β : Transmission rate ( day −1)
 
--   Di: Diffusion coefficient for I (cm2/ day ) (23)
+-   γ : Recovery rate ( day −1)
 
-**Typical values:**
+-   N : Total population
+
+-   Di: Diffusion coefficient for I (cm2/ day )
+
+-   Ds: Diffusion coefficient for S (cm2/ day )
+
+**Typical values: (Boundarys)**
 
 Ds = 0.01 − 0.1 cm2/ day,
 
