@@ -1,0 +1,109 @@
+---
+title: "Epidemiological Modeling: Spatial SIR (PDE) Model"
+subtitle: "Project Report Mathematical Modelling; ACLS AS25"
+author: "Noirin Graham, Kai Aebli"
+date: "2026-01-19"
+format: 
+    html:
+        toc: true
+        toc-depth: 3
+        number-sections: true
+        code-fold: true
+        code-tools: true
+        theme: cosmo
+        df-print: paged
+        html-math-method: 
+            method: mathjax
+            url: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+            macros: {}
+            tags: all
+execute:
+    echo: true
+    warning: false
+    message: false
+    cache: false
+jupyter: python3
+---
+# Introduction
+In this project we consider a spatial version of the Susceptible-Infectious-Recovered (SIR) model.
+...
+Maybe not needed ?
+
+# Model Formulation
+We consider a spatially distributed population in 2D over time. 
+
+## Variables and Parameters
+**State variables:**
+
+- $S(x,y,t)$: density of susceptible individuals  
+- $I(x,y,t)$: density of infectious individuals  
+- $R(x,y,t)$: density of recovered individuals 
+
+The local total population densitiy is then given by:
+\[
+N(x,y,t) = S(x,y,t) + I(x,y,t) + R(x,y,t).
+\]
+
+**Parameters:**
+
+- $\beta > 0$: transmission rate (time$^{-1}$)  
+- $\gamma > 0$: recovery rate (time$^{-1}$)  
+- $D_i \ge 0$: diffusion coefficient of infected individuals (space$^2$/time)
+
+The PDE System used, represent spatial movement solely for the infected compartment through the diffusion rate $D_I \ge 0$.
+
+## PDE System
+The spatial SIR model is defined by the following PDE system:
+
+$$
+\begin{align}
+\frac{\partial S}{\partial t} &= -\beta \frac{S I}{N}, \tag{1}\\
+\frac{\partial I}{\partial t} &= D_i \nabla^2 I + \beta \frac{S I}{N} - \gamma I, \tag{2}\\
+\frac{\partial R}{\partial t} &= \gamma I. \tag{3}
+\end{align}
+$$
+
+where the infection term $\beta \frac{SI}{N}$ transfers individuals from $S$ to $I$, and the recovery term $\gamma I$ transfers individuals from $I$ to $R$. The diffusion term in $I$ models random movement of infectious individuals in space, which leads to the spatial spread of the disease.
+
+## Classification of the PDE
+
+# Model Assumptions and Choices
+
+## FD scheme 
+
+## Boundary conditions
+
+## Initial conditions
+
+## Parameter choices
+
+
+# Discretisation
+
+## Finite difference discretisation (FD)
+
+## Laplacian operator (2D)
+
+## Boundary conditions utilities
+
+# Order of Error
+
+## Step-wise order of the FD approximation
+
+# Implementation
+
+## Initial Conditions Setup
+
+## Time stepping routine
+
+## Simulation of the PDE
+
+# Visualisation
+
+# Stability Investigation
+
+# Parameter Studies
+
+# (Optional) Scheme Comparison
+
+# (Optional) Error Estimation
