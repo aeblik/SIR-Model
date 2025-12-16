@@ -1,7 +1,11 @@
 ---
 title: "SIR-Model"
 author: "Abeli Kai Graham Noirin"
+<<<<<<< HEAD
 format: html
+=======
+format: pdf
+>>>>>>> 84bdeaed01ec0b23c1efce57b591bdbb1b5bd473
 editor: visual
 ---
 
