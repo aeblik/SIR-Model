@@ -30,7 +30,7 @@ In this project we consider a spatial version of the Susceptible-Infectious-Reco
 Maybe not needed ?
 
 # Model Formulation
-We consider a spatially distributed population in 2D over time. 
+We consider a spatially distributed population in two dimensions over time. 
 
 ## Variables and Parameters
 **State variables:**
@@ -40,9 +40,10 @@ We consider a spatially distributed population in 2D over time.
 - $R(x,y,t)$: density of recovered individuals 
 
 The local total population densitiy is then given by:
-\[
+
+$$
 N(x,y,t) = S(x,y,t) + I(x,y,t) + R(x,y,t).
-\]
+$$
 
 **Parameters:**
 
@@ -50,7 +51,7 @@ N(x,y,t) = S(x,y,t) + I(x,y,t) + R(x,y,t).
 - $\gamma > 0$: recovery rate (time$^{-1}$)  
 - $D_i \ge 0$: diffusion coefficient of infected individuals (space$^2$/time)
 
-The PDE System used, represent spatial movement solely for the infected compartment through the diffusion rate $D_I \ge 0$.
+The PDE System used, represent spatial movement solely for the infected compartment through the diffusion rate $D_i \ge 0$.
 
 ## PDE System
 The spatial SIR model is defined by the following PDE system:
