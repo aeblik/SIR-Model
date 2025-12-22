@@ -24,22 +24,20 @@ execute:
     cache: false
 jupyter: python3
 ---
-
 # Introduction
-
-In this project we consider a spatial version of the Susceptible-Infectious-Recovered (SIR) model. ... Maybe not needed ?
+In this project we consider a spatial version of the Susceptible-Infectious-Recovered (SIR) model.
+...
+Maybe not needed ?
 
 # Model Formulation
-
-We consider a spatially distributed population in two dimensions over time.
+We consider a spatially distributed population in two dimensions over time. 
 
 ## Variables and Parameters
-
 **State variables:**
 
--   $S(x,y,t)$: density of susceptible individuals\
--   $I(x,y,t)$: density of infectious individuals\
--   $R(x,y,t)$: density of recovered individuals
+- $S(x,y,t)$: density of susceptible individuals  
+- $I(x,y,t)$: density of infectious individuals  
+- $R(x,y,t)$: density of recovered individuals 
 
 The local total population densitiy is then given by:
 
@@ -49,15 +47,14 @@ $$
 
 **Parameters:**
 
--   $\beta > 0$: transmission rate (time$^{-1}$)\
--   $\gamma > 0$: recovery rate (time$^{-1}$)\
--   $D_s \ge 0$: diffusion coefficient of susceptible individuals (space$^2$/time)
--   $D_i \ge 0$: diffusion coefficient of infected individuals (space$^2$/time)
+- $\beta > 0$: transmission rate (time$^{-1}$)  
+- $\gamma > 0$: recovery rate (time$^{-1}$)  
+- $D_s \ge 0$: diffusion coefficient of susceptible individuals (space$^2$/time)
+- $D_i \ge 0$: diffusion coefficient of infected individuals (space$^2$/time)
 
 The PDE System used, represents spatial movement for the infected compartment through the diffusion rate $D_i$ and for the susceptible compartment through $D_s$.
 
 ## PDE System
-
 The spatial SIR model is defined by the following PDE system:
 
 $$
@@ -71,18 +68,20 @@ $$
 where the infection term $\beta \frac{SI}{N}$ transfers individuals from $S$ to $I$, and the recovery term $\gamma I$ transfers individuals from $I$ to $R$. The diffusion terms in $S$ and $I$ model random movement of susceptible and infectious individuals in space, which leads to the spatial spread of the disease.
 
 ## Classification of the PDE
-
-The spatial SIR model defined by equations 1 to 3 is a time-dependent, non-linear reaction-diffusion system. The quadratic laplacian operator in the diffusion terms make the system second-order and the coupling term $\beta \frac{SI}{N}$ makes it non-linear, as the dependent variables $S$ and $I$ are mutliplied.
+The spatial SIR model defined by equations 1 to 3 is a time-dependent, non-linear reaction-diffusion system. The laplacian operator $\nabla^2$ in the diffusion terms make the system second-order and the coupling term $\beta \frac{SI}{N}$ makes it non-linear, as the dependent variables $S$ and $I$ are mutliplied.
 
 # Model Assumptions and Choices
 
-## FD scheme
+
+
+## FD scheme 
 
 ## Boundary conditions
 
 ## Initial conditions
 
 ## Parameter choices
+
 
 # Discretisation
 
