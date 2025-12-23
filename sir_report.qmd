@@ -72,20 +72,26 @@ The spatial SIR model defined by equations 1 to 3 is a time-dependent, non-linea
 
 # Model Assumptions and Choices
 
-
-
 ## FD scheme 
+The spatial SIR system is solved with a finite difference method on a cartesian grid. With a one-step forward update, time is simluated explicitly - the state at $t_i$ is computed directly from the known values at $t_{i-1}$. The spatial derivateives ($\nabla^2$) are approximated using the central finite difference method. 
 
 ## Boundary conditions
+For the diffusing compartments $S$ and $I$ we apply Neumann boundary conditions to ensure isolation, such that no individuals enter or leave through the space of interest.
+
+In the discrete implementation, the no-flux condition is enforced by equating boundary values to their adjacent interior values, which yields a vanishing normal derivative at the boundary in the finite-difference sense. (MAYBE THIS PARAGRPAH IS NOT NEEDED)
 
 ## Initial conditions
+To simulate the spread of an infectious disease the initial conditions were set such that the population is mostly susceptible, with a small "drop" of infected persons concentrated in the middle of the space and zero recovered individuals. This represents an outbreak starting locally and spreading with diffusion. 
 
 ## Parameter choices
+Model parameters are assumed to be constant. Separate diffusion coefficients allow to simulate different different mixture levels between the Susceptible ($S$) and Infected ($I$) compartment. Parameter values are chosen based on the given typical values from the project description. 
 
+Parameter magnitudes are varied to explore their influence on the spread patterns and peak infection levels. 
 
 # Discretisation
 
 ## Finite difference discretisation (FD)
+Space is discretised on a uniform grid with spacings $\Delta x$ and $\Delta y$ and time with step size $\Delta t$. Like that continuous fields are approximated with discrete grid points and partial derivatives are replaced by finite differences. 
 
 ## Laplacian operator (2D)
 
