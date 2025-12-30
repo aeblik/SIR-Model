@@ -94,6 +94,11 @@ Parameter magnitudes are varied to explore their influence on the spread pattern
 Space is discretised on a uniform grid with spacings $\Delta x$ and $\Delta y$ and time with step size $\Delta t$. Like that continuous fields are approximated with discrete grid points and partial derivatives are replaced by finite differences. 
 
 ## Laplacian operator (2D)
+The two-dimensional Laplace operator is defined as the sum of second derivatives in each coordinate direction,
+$
+\nabla^2 u = \partial_{xx}u + \partial_{yy}u.
+$
+We discretise $(\partial_{xx}u\)$ and $(\partial_{yy}u\)$ using second-order central differences and sum them to obtain a discrete Laplacian on the grid.
 
 ## Boundary conditions utilities
 
