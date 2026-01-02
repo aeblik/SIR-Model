@@ -24,20 +24,22 @@ execute:
     cache: false
 jupyter: python3
 ---
+
 # Introduction
-In this project we consider a spatial version of the Susceptible-Infectious-Recovered (SIR) model.
-...
-Maybe not needed ?
+
+In this project we consider a spatial version of the Susceptible-Infectious-Recovered (SIR) model. ... Maybe not needed ?
 
 # Model Formulation
-We consider a spatially distributed population in two dimensions over time. 
+
+We consider a spatially distributed population in two dimensions over time.
 
 ## Variables and Parameters
+
 **State variables:**
 
-- $S(x,y,t)$: density of susceptible individuals  
-- $I(x,y,t)$: density of infectious individuals  
-- $R(x,y,t)$: density of recovered individuals 
+-   $S(x,y,t)$: density of susceptible individuals\
+-   $I(x,y,t)$: density of infectious individuals\
+-   $R(x,y,t)$: density of recovered individuals
 
 The local total population densitiy is then given by:
 
@@ -47,14 +49,15 @@ $$
 
 **Parameters:**
 
-- $\beta > 0$: transmission rate (time$^{-1}$)  
-- $\gamma > 0$: recovery rate (time$^{-1}$)  
-- $D_s \ge 0$: diffusion coefficient of susceptible individuals (space$^2$/time)
-- $D_i \ge 0$: diffusion coefficient of infected individuals (space$^2$/time)
+-   $\beta > 0$: transmission rate (time$^{-1}$)\
+-   $\gamma > 0$: recovery rate (time$^{-1}$)\
+-   $D_s \ge 0$: diffusion coefficient of susceptible individuals (space$^2$/time)
+-   $D_i \ge 0$: diffusion coefficient of infected individuals (space$^2$/time)
 
 The PDE System used, represents spatial movement for the infected compartment through the diffusion rate $D_i$ and for the susceptible compartment through $D_s$.
 
 ## PDE System
+
 The spatial SIR model is defined by the following PDE system:
 
 $$
@@ -68,37 +71,40 @@ $$
 where the infection term $\beta \frac{SI}{N}$ transfers individuals from $S$ to $I$, and the recovery term $\gamma I$ transfers individuals from $I$ to $R$. The diffusion terms in $S$ and $I$ model random movement of susceptible and infectious individuals in space, which leads to the spatial spread of the disease.
 
 ## Classification of the PDE
+
 The spatial SIR model defined by equations 1 to 3 is a time-dependent, non-linear reaction-diffusion system. The laplacian operator $\nabla^2$ in the diffusion terms make the system second-order and the coupling term $\beta \frac{SI}{N}$ makes it non-linear, as the dependent variables $S$ and $I$ are mutliplied.
 
 # Model Assumptions and Choices
 
-## FD scheme 
-The spatial SIR system is solved with a finite difference method on a cartesian grid. With a one-step forward update, time is simluated explicitly - the state at $t_i$ is computed directly from the known values at $t_{i-1}$. The spatial derivateives ($\nabla^2$) are approximated using the central finite difference method. 
+## FD scheme
+
+The spatial SIR system is solved with a finite difference method on a cartesian grid. With a one-step forward update, time is simluated explicitly - the state at $t_i$ is computed directly from the known values at $t_{i-1}$. The spatial derivateives ($\nabla^2$) are approximated using the central finite difference method.
 
 ## Boundary conditions
+
 For the diffusing compartments $S$ and $I$ we apply Neumann boundary conditions to ensure isolation, such that no individuals enter or leave through the space of interest.
 
 In the discrete implementation, the no-flux condition is enforced by equating boundary values to their adjacent interior values, which yields a vanishing normal derivative at the boundary in the finite-difference sense. (MAYBE THIS PARAGRPAH IS NOT NEEDED)
 
 ## Initial conditions
-To simulate the spread of an infectious disease the initial conditions were set such that the population is mostly susceptible, with a small "drop" of infected persons concentrated in the middle of the space and zero recovered individuals. This represents an outbreak starting locally and spreading with diffusion. 
+
+To simulate the spread of an infectious disease the initial conditions were set such that the population is mostly susceptible, with a small "drop" of infected persons concentrated in the middle of the space and zero recovered individuals. This represents an outbreak starting locally and spreading with diffusion.
 
 ## Parameter choices
-Model parameters are assumed to be constant. Separate diffusion coefficients allow to simulate different different mixture levels between the Susceptible ($S$) and Infected ($I$) compartment. Parameter values are chosen based on the given typical values from the project description. 
 
-Parameter magnitudes are varied to explore their influence on the spread patterns and peak infection levels. 
+Model parameters are assumed to be constant. Separate diffusion coefficients allow to simulate different different mixture levels between the Susceptible ($S$) and Infected ($I$) compartment. Parameter values are chosen based on the given typical values from the project description.
+
+Parameter magnitudes are varied to explore their influence on the spread patterns and peak infection levels.
 
 # Discretisation
 
 ## Finite difference discretisation (FD)
-Space is discretised on a uniform grid with spacings $\Delta x$ and $\Delta y$ and time with step size $\Delta t$. Like that continuous fields are approximated with discrete grid points and partial derivatives are replaced by finite differences. 
+
+Space is discretised on a uniform grid with spacings $\Delta x$ and $\Delta y$ and time with step size $\Delta t$. Like that continuous fields are approximated with discrete grid points and partial derivatives are replaced by finite differences.
 
 ## Laplacian operator (2D)
-The two-dimensional Laplace operator is defined as the sum of second derivatives in each coordinate direction,
-$
-\nabla^2 u = \partial_{xx}u + \partial_{yy}u.
-$
-We discretise $(\partial_{xx}u\)$ and $(\partial_{yy}u\)$ using second-order central differences and sum them to obtain a discrete Laplacian on the grid.
+
+The two-dimensional Laplace operator is defined as the sum of second derivatives in each coordinate direction, \$ \nabla\^2 u = \partial*{xx}u +* \partial{yy}u. \$ We discretise $(\partial_{xx}u\)$ and $(\partial_{yy}u\)$ using second-order central differences and sum them to obtain a discrete Laplacian on the grid.
 
 ## Boundary conditions utilities
 
