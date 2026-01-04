@@ -77,7 +77,7 @@ The spatial SIR model defined by equations 1 to 3 is a time-dependent, non-linea
 # Model Assumptions and Choices
 
 ## FD scheme 
-The spatial SIR system is solved with a finite difference method on a cartesian grid. With a one-step forward update, time is simluated explicitly - the state at $t_i$ is computed directly from the known values at $t_{i-1}$. The spatial derivatives ($\nabla^2$) are approximated using the central finite difference method. 
+The spatial SIR system is solved with a finite difference method on a cartesian grid. With a one-step forward update, time is simluated explicitly - the state at $t_i$ is computed directly from the known values at $t_{i-1}$. The spatial derivatives ($\nabla^2$) are approximated using the central finite difference method. Hence, the system is solved using the Forward-Time Central-Space (FTCS) scheme. 
 
 ## Boundary conditions
 
@@ -104,7 +104,10 @@ Space is discretised on a uniform grid with spacings $\Delta x$ and $\Delta y$ a
 ## Laplacian operator (2D)
 The two-dimensional Laplace operator is defined as the sum of second derivatives in each coordinate direction,
 $\nabla^2 u = \partial_{xx}u + \partial_{yy}u.$
-We discretise $\partial_{xx}u$ and $\partial_{yy}u$ using second-order central differences and sum them to obtain a discrete Laplacian on the grid.
+We discretise $\partial_{xx}u$ and $\partial_{yy}u$ using second-order central differences and sum them to obtain a discrete Laplacian on the grid. Resulting in a 5-point stencil, where every grid point is defined as:
+$$
+\Delta^2u_{i,j} \approx \frac{u_{i+1,j}-2u_{i,j}+u_{i-1,j}}{\Delta x^2}+\frac{u_{i,j+1}-2u_{i,j}+u_{i,j-1}}{\Delta y^2}
+$$
 
 ## Boundary conditions utilities
 The no-flux boundary condition previously mentioned is enforced by setting each boundary value equal to its closest interior neighbor. This dissolves the one-sided normal derivative at the boundary, while keeping interior update formulas unchanged. 
