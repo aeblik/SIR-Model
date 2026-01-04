@@ -329,7 +329,7 @@ dt = 0.01            # Δt = 0.01 days (must be small for stability!)
 t_max = 100          # Simulate for 100 days
 
 # Fixed parameters (within task-specified ranges)
-N = 8000000          # Total population (middle of 1000-5000 range)
+N = 5000         # Total population (middle of 1000-5000 range)
 Ds = 0.05            # Diffusion for S: 0.05 cm²/day (middle of 0.01-0.1)
 Di = 0.05            # Diffusion for I: 0.05 cm²/day (middle of 0.01-0.1)
 
