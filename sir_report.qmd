@@ -73,7 +73,7 @@ The spatial SIR model defined by equations 1 to 3 is a time-dependent, non-linea
 # Model Assumptions and Choices
 
 ## FD scheme 
-The spatial SIR system is solved with a finite difference method on a cartesian grid. With a one-step forward update, time is simluated explicitly - the state at $t_i$ is computed directly from the known values at $t_{i-1}$. The spatial derivateives ($\nabla^2$) are approximated using the central finite difference method. 
+The spatial SIR system is solved with a finite difference method on a cartesian grid. With a one-step forward update, time is simluated explicitly - the state at $t_i$ is computed directly from the known values at $t_{i-1}$. The spatial derivatives ($\nabla^2$) are approximated using the central finite difference method. 
 
 ## Boundary conditions
 For the diffusing compartments $S$ and $I$ we apply Neumann boundary conditions to ensure isolation, such that no individuals enter or leave through the space of interest.
@@ -95,16 +95,22 @@ Space is discretised on a uniform grid with spacings $\Delta x$ and $\Delta y$ a
 
 ## Laplacian operator (2D)
 The two-dimensional Laplace operator is defined as the sum of second derivatives in each coordinate direction,
-$
-\nabla^2 u = \partial_{xx}u + \partial_{yy}u.
-$
-We discretise $(\partial_{xx}u\)$ and $(\partial_{yy}u\)$ using second-order central differences and sum them to obtain a discrete Laplacian on the grid.
+$\nabla^2 u = \partial_{xx}u + \partial_{yy}u.$
+We discretise $\partial_{xx}u$ and $\partial_{yy}u$ using second-order central differences and sum them to obtain a discrete Laplacian on the grid.
 
 ## Boundary conditions utilities
+The no-flux boundary condition previously mentioned is enforced by setting each boundary value equal to its closest interior neighbor. This dissolves the one-sided normal derivative at the boundary, while keeping interior update formulas unchanged. 
 
 # Order of Error
 
 ## Step-wise order of the FD approximation
+The forward time discretisation is first-order accurate in time. Hence, the error scales like $\mathcal{O}(\Delta t)$. The spatial discretisation used for the diffusion terms are second-order accurate, yielding errors of order $\mathcal{O}(\Delta x^2)$ and $\mathcal{O}(\Delta y^2)$ respectively. 
+
+For stable choices of the time step, i.e. the time step is sufficiently small relative to the spatial grid sizes, the error decreases as $\Delta t \to 0\$ and $\Delta x, \Delta y \to 0$.
+Specifically, the time step must satisfy:
+$\Delta t \le \frac{1}{2D\left(\frac{1}{\Delta x^2} + \frac{1}{\Delta y^2}\right)}$
+
+$\Delta t \le C \Delta x^2$
 
 # Implementation
 
