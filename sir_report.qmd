@@ -76,8 +76,9 @@ The spatial SIR model defined by equations 1 to 3 is a time-dependent, non-linea
 
 # Model Assumptions and Choices
 
-## FD scheme 
-The spatial SIR system is solved with a finite difference method on a cartesian grid. With a one-step forward update, time is simluated explicitly - the state at $t_i$ is computed directly from the known values at $t_{i-1}$. The spatial derivatives ($\nabla^2$) are approximated using the central finite difference method. Hence, the system is solved using the Forward-Time Central-Space (FTCS) scheme. 
+## FD scheme
+
+The spatial SIR system is solved with a finite difference method on a cartesian grid. With a one-step forward update, time is simluated explicitly - the state at $t_i$ is computed directly from the known values at $t_{i-1}$. The spatial derivatives ($\nabla^2$) are approximated using the central finite difference method. Hence, the system is solved using the Forward-Time Central-Space (FTCS) scheme.
 
 ## Boundary conditions
 
@@ -102,10 +103,8 @@ Parameter magnitudes are varied to explore their influence on the spread pattern
 Space is discretised on a uniform grid with spacings $\Delta x$ and $\Delta y$ and time with step size $\Delta t$. Like that continuous fields are approximated with discrete grid points and partial derivatives are replaced by finite differences.
 
 ## Laplacian operator (2D)
-The two-dimensional Laplace operator is defined as the sum of second derivatives in each coordinate direction,
-$\nabla^2 u = \partial_{xx}u + \partial_{yy}u.$
-We discretise $\partial_{xx}u$ and $\partial_{yy}u$ using second-order central differences and sum them to obtain a discrete Laplacian on the grid. Resulting in a 5-point stencil, where every grid point is defined as:
-$$
+
+The two-dimensional Laplace operator is defined as the sum of second derivatives in each coordinate direction, $\nabla^2 u = \partial_{xx}u + \partial_{yy}u.$ We discretise $\partial_{xx}u$ and $\partial_{yy}u$ using second-order central differences and sum them to obtain a discrete Laplacian on the grid. Resulting in a 5-point stencil, where every grid point is defined as: $$
 \Delta^2u_{i,j} \approx \frac{u_{i+1,j}-2u_{i,j}+u_{i-1,j}}{\Delta x^2}+\frac{u_{i,j+1}-2u_{i,j}+u_{i,j-1}}{\Delta y^2}
 $$
 
@@ -118,32 +117,108 @@ $$
 Add citation to Leveque
 
 ## Boundary conditions utilities
-The no-flux boundary condition previously mentioned is enforced by setting each boundary value equal to its closest interior neighbor. This dissolves the one-sided normal derivative at the boundary, while keeping interior update formulas unchanged. 
+
+The no-flux boundary condition previously mentioned is enforced by setting each boundary value equal to its closest interior neighbor. This dissolves the one-sided normal derivative at the boundary, while keeping interior update formulas unchanged.
 
 # Order of Error
 
 ## Step-wise order of the FD approximation
-The forward time discretisation is first-order accurate in time. Hence, the error scales like $\mathcal{O}(\Delta t)$. The spatial discretisation used for the diffusion terms are second-order accurate, yielding errors of order $\mathcal{O}(\Delta x^2)$ and $\mathcal{O}(\Delta y^2)$ respectively. 
 
-For stable choices of the time step, i.e. the time step is sufficiently small relative to the spatial grid sizes, the error decreases as $\Delta t \to 0\$ and $\Delta x, \Delta y \to 0$.
-Specifically, the time step must satisfy:
-$\Delta t \le \frac{1}{2D\left(\frac{1}{\Delta x^2} + \frac{1}{\Delta y^2}\right)}$
+The forward time discretisation is first-order accurate in time. Hence, the error scales like $\mathcal{O}(\Delta t)$. The spatial discretisation used for the diffusion terms are second-order accurate, yielding errors of order $\mathcal{O}(\Delta x^2)$ and $\mathcal{O}(\Delta y^2)$ respectively.
+
+For stable choices of the time step, i.e. the time step is sufficiently small relative to the spatial grid sizes, the error decreases as $\Delta t \to 0$ and $\Delta x, \Delta y \to 0$. Specifically, the time step must satisfy: $\Delta t \le \frac{1}{2D\left(\frac{1}{\Delta x^2} + \frac{1}{\Delta y^2}\right)}$
 
 $\Delta t \le C \Delta x^2$
 
 # Implementation
 
+-   **PDE System**: Reaction-diffusion equations with diffusion for S and I, source term for R
+
+-   **Numerical Method**: Finite difference (central differences for Laplacian), Forward Euler time integration
+
+-   **Spatial Grid**: 101×101 points, 10×10 cm domain
+
+-   **Boundary Conditions**: Zero-flux Neumann (closed system)
+
+-   **Stability**: Time step constrained by diffusion limit (dt \< 0.5 × dt_max)
+
+-   **Parameters**: β (transmission), γ (recovery), Ds/Di (diffusion coefficients)
+
+-   **Initial Conditions**: Gaussian infected seed at center, uniform susceptible
+
+-   **Scenarios**: 4 combinations of low/high β and γ values
+
+-   **Outputs**: Spatial snapshots, integrated totals (S, I, R over time)
+
+-   **Sensitivity Analysis**: Multi-trajectory comparison across parameter space
+
 ## Initial Conditions Setup
+
+-   **Domain**: 10×10 cm, 101×101 grid points
+
+-   **Infected (I)**: Gaussian distribution centered at (5, 5) cm
+
+    -   Peak value: 0.02 individuals/cm²
+
+    -   Standard deviation (σ): 0.5 cm
+
+    -   Formula: I = 0.02 × exp(-((x-5)² + (y-5)²) / (2×0.5²))
+
+-   **Recovered (R)**: Zero everywhere
+
+-   **Susceptible (S)**: N₀ - I - R, where N₀ = 1.0 individuals/cm²
+
+-   **Conservation**: S + I + R = 1.0 at all spatial points initially
 
 ## Time stepping routine
 
+-   **Method**: Explicit Forward Euler (first-order)
+
+-   **Time step**: Stability-constrained by diffusion limit
+
+    -   dt_max = 1 / (2·D_max·(1/dx² + 1/dy²))
+
+    -   dt = 0.5 × dt_max (safety factor)
+
+-   **Algorithm per step** (`sir_step` function):
+
+    1.  Apply Neumann boundary conditions to S and I
+
+    2.  Calculate total population N = S + I + R
+
+    3.  Compute reaction terms: infection = β·S·I/N, recovery = γ·I
+
+    4.  Compute diffusion terms: ∇²S and ∇²I using finite differences
+
+    5.  Update:
+
+        -   S\^(n+1) = S\^n + dt·(D_s·∇²S - infection)
+
+        -   I\^(n+1) = I\^n + dt·(D_i·∇²I + infection - recovery)
+
+        -   R\^(n+1) = R\^n + dt·recovery
+
+    6.  Clip negative values to zero
+
+-   **Loop**: Iterates for nt steps (nt ≈ 73,000 for 365 days)
+
+-   **Storage**: Snapshots saved every 50 steps
+
 ## Simulation of the PDE
+
+function run_simulation
 
 # Visualisation
 
 # Stability Investigation
 
+dt_max detlat
+
+Grid x 0.15 (lösung nicht mehr stimmen)
+
 # Parameter Studies
+
+SENSITIVITY ANALYSIS STYLE PLOT WITH LABELED TRAJECTORIES
 
 # (Optional) Scheme Comparison
 
