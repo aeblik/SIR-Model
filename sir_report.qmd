@@ -25,6 +25,8 @@ execute:
 jupyter: python3
 ---
 
+![SIR-Model: S, I, R over time](images/Model_over_time.png)
+
 # Introduction
 
 In this project we consider a spatial version of the Susceptible-Infectious-Recovered (SIR) model. ... Maybe not needed ?
@@ -166,7 +168,14 @@ Any negative values were set to zero to ensure physical validity.
 
 ## Simulation of the PDE
 
-The simulation was initiated by the `run_simulation` function, which combined all the model's components. This function initialised the spatial grids with the defined initial conditions and set the epidemiological parameters (β and γ) and the diffusion coefficients (D_s and D_i). Four different scenarios were simulated to compare disease dynamics under varying conditions. The function executed the time loop by repeatedly calling the `sir_step` function to advance the solution forward in time.
+The simulation was initiated by the `run_simulation` function, which combined all the model's components. This function initialised the spatial grids with the defined initial conditions and set the epidemiological parameters (β and γ) and the diffusion coefficients (D_s and D_i). Four different scenarios were simulated to compare disease dynamics under varying conditions.
+
+-   Low β, Low γ: Slow spread, slow recovery
+-   High β, Low γ: Fast spread, slow recovery
+-   Low β, High γ: Slow spread, fast recovery
+-   High β, High γ: Fast spread, fast recovery
+
+The function executed the time loop by repeatedly calling the `sir_step` function to advance the solution forward in time.
 
 The simulation ran for roughly 73,000 time steps, which simulated 365 days. Snapshots were saved every 50 steps for visualisation and analysis. This process was repeated in steps to observe the spatial and temporal evolution of the disease across the grid.
 
@@ -178,4 +187,8 @@ Grid x 0.15 (lösung nicht mehr stimmen)
 
 # Parameter Studies
 
-![Spatial snapshots at selected time points for all scenarios](images/heatmap.png){alt="Spatial snapshots at selected time points for all scenarios" fig-align="center"}
+The following plot shows the impact of different transmission (β) and recovery (γ) rates on the spatial dynamics. Each row shows a different scenario. These scenarios are described in the section "Simulation of the PDE". Each column shows a different day. The countdown begins at day 0 and ends at day 365. Each scenario begins with a small number of infected individuals in the middle.
+
+The plot clearly shows that when transmission is low and the recovery rate is high, the number of infected people on the last day was the highest. It can be observed that a high transmission causes the disease to spread faster towards the edges, while a low transmission keeps the infected population for a longer time concentrated in the middle.
+
+![Spatial snapshots at selected time points for all scenarios](images/heatmap.png){fig-align="center"}
