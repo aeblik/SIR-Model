@@ -60,13 +60,13 @@ The PDE System used, represents spatial movement for the infected compartment th
 
 The spatial SIR model is defined by the following PDE system:
 
-$$
+
 \begin{align}
 \frac{\partial S}{\partial t} &= D_s \nabla^2 S -\beta \frac{S I}{N}, \tag{1}\\
 \frac{\partial I}{\partial t} &= D_i \nabla^2 I + \beta \frac{S I}{N} - \gamma I, \tag{2}\\
 \frac{\partial R}{\partial t} &= \gamma I. \tag{3}
 \end{align}
-$$
+
 
 where the infection term $\beta \frac{SI}{N}$ transfers individuals from $S$ to $I$, and the recovery term $\gamma I$ transfers individuals from $I$ to $R$. The diffusion terms in $S$ and $I$ model random movement of susceptible and infectious individuals in space, which leads to the spatial spread of the disease.
 
