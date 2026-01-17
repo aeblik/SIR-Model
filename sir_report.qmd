@@ -136,11 +136,7 @@ $\Delta t \le C \Delta x^2$
 
 The model simulates the spread of disease across a two-dimensional grid, in which each cell can be susceptible (S), infected (I) or recovered (R). Rather than treating the population as one large group, it tracks how the disease spreads spatially, as if observing it move across a map.
 
-How the Disease Spreads
-
-The model uses the finite difference method to calculate how people (and therefore disease) move between neighbouring cells. The model therefore looks at each cell and its four neighbours. The diffusion coefficient describes the speed of diffusion between neighbours. This triggers a diffusion effect, where the high concentration naturally flows towards the lower concentration. The model was set up with zero-flux Neumann boundaries. This means that the system is closed and that no one can enter or leave the edges. This reflects a real-world scenario where the borders of a country are closed in order to minimise the international spread of a disease.
-
-The Disease Dynamics
+The model uses the finite difference method to calculate how people (and therefore disease) move between neighbouring cells. The model therefore looks at each cell and its four neighbours. The diffusion coefficient describes the speed of diffusion between neighbours. This triggers a diffusion effect, where the high concentration naturally flows towards the lower concentration. The model was set up with zero-flux Neumann boundaries.
 
 Three specific situations occurred for each time step. First, susceptible persons became infected as a result of contact with an infected person. Infected persons recovered based on the recovery rate (γ). The three populations (S, I and R) moved around the grid.
 
@@ -170,13 +166,9 @@ Any negative values were set to zero to ensure physical validity.
 
 ## Simulation of the PDE
 
-The simulation was initiated by the run_simulation function, which combined all the model's components. This function initialised the spatial grids with the defined initial conditions and set the epidemiological parameters (β and γ) and the diffusion coefficients (D_s and D_i). Four different scenarios were simulated to compare disease dynamics under varying conditions. The function executed the time loop by repeatedly calling the `sir_step` function to advance the solution forward in time.
+The simulation was initiated by the `run_simulation` function, which combined all the model's components. This function initialised the spatial grids with the defined initial conditions and set the epidemiological parameters (β and γ) and the diffusion coefficients (D_s and D_i). Four different scenarios were simulated to compare disease dynamics under varying conditions. The function executed the time loop by repeatedly calling the `sir_step` function to advance the solution forward in time.
 
 The simulation ran for roughly 73,000 time steps, which simulated 365 days. Snapshots were saved every 50 steps for visualisation and analysis. This process was repeated in steps to observe the spatial and temporal evolution of the disease across the grid.
-
-# Visualisation
-
-![Spatial snapshots at selected time points for all scenarios](images/heatmap.png){fig-align="center"}
 
 # Stability Investigation
 
@@ -186,8 +178,4 @@ Grid x 0.15 (lösung nicht mehr stimmen)
 
 # Parameter Studies
 
-SENSITIVITY ANALYSIS STYLE PLOT WITH LABELED TRAJECTORIES
-
-# (Optional) Scheme Comparison
-
-# (Optional) Error Estimation
+![Spatial snapshots at selected time points for all scenarios](images/heatmap.png){alt="Spatial snapshots at selected time points for all scenarios" fig-align="center"}
