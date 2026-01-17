@@ -134,83 +134,49 @@ $\Delta t \le C \Delta x^2$
 
 # Implementation
 
--   **PDE System**: Reaction-diffusion equations with diffusion for S and I, source term for R
+The model simulates the spread of disease across a two-dimensional grid, in which each cell can be susceptible (S), infected (I) or recovered (R). Rather than treating the population as one large group, it tracks how the disease spreads spatially, as if observing it move across a map.
 
--   **Numerical Method**: Finite difference (central differences for Laplacian), Forward Euler time integration
+How the Disease Spreads
 
--   **Spatial Grid**: 101×101 points, 10×10 cm domain
+The model uses the finite difference method to calculate how people (and therefore disease) move between neighbouring cells. The model therefore looks at each cell and its four neighbours. The diffusion coefficient describes the speed of diffusion between neighbours. This triggers a diffusion effect, where the high concentration naturally flows towards the lower concentration. The model was set up with zero-flux Neumann boundaries. This means that the system is closed and that no one can enter or leave the edges. This reflects a real-world scenario where the borders of a country are closed in order to minimise the international spread of a disease.
 
--   **Boundary Conditions**: Zero-flux Neumann (closed system)
+The Disease Dynamics
 
--   **Stability**: Time step constrained by diffusion limit (dt \< 0.5 × dt_max)
-
--   **Parameters**: β (transmission), γ (recovery), Ds/Di (diffusion coefficients)
-
--   **Initial Conditions**: Gaussian infected seed at center, uniform susceptible
-
--   **Scenarios**: 4 combinations of low/high β and γ values
-
--   **Outputs**: Spatial snapshots, integrated totals (S, I, R over time)
-
--   **Sensitivity Analysis**: Multi-trajectory comparison across parameter space
+Three specific situations occurred for each time step. First, susceptible persons became infected as a result of contact with an infected person. Infected persons recovered based on the recovery rate (γ). The three populations (S, I and R) moved around the grid.
 
 ## Initial Conditions Setup
 
--   **Domain**: 10×10 cm, 101×101 grid points
+The model was initialised with a spatial domain of a 100x100 grid representing a 10,000-cell square area.
 
--   **Infected (I)**: Gaussian distribution centered at (5, 5) cm
+Separate grids were created for each state (S, I and R). The infected population started with a small number of infected individuals located in the centre of the grid (1% of the total population). The susceptible population (99% of the total population) was distributed equally across the grid and the recovered population was initially zero everywhere.
 
-    -   Peak value: 0.02 individuals/cm²
-
-    -   Standard deviation (σ): 0.5 cm
-
-    -   Formula: I = 0.02 × exp(-((x-5)² + (y-5)²) / (2×0.5²))
-
--   **Recovered (R)**: Zero everywhere
-
--   **Susceptible (S)**: N₀ - I - R, where N₀ = 1.0 individuals/cm²
-
--   **Conservation**: S + I + R = 1.0 at all spatial points initially
+The infection was introduced using a Gaussian distribution. This created a smooth circular infection zone that gradually disappeared from the centre outwards.
 
 ## Time stepping routine
 
--   **Method**: Explicit Forward Euler (first-order)
+The model uses the Euler method, following a step-wise approach. The model used the Euler method in a stepwise manner. The time step was chosen to ensure numerical stability. The maximum stable time step was calculated as dt\_(max) = 1/(2·D\_(max) · (1/dx² + 1/dy²)). The actual time step used was dt = 0.5 × dt\_(max), incorporating a safety factor of 0.5 to prevent the solution from becoming unstable during the simulation.
 
--   **Time step**: Stability-constrained by diffusion limit
+At each time step implemented in the sir_step function, Neumann boundary conditions were applied to the susceptible and infected populations. The total population was calculated as N = S + I + R, and the reaction terms for infection (β·S·I/N) and recovery (γ·I), as well as the diffusion terms (∇²S and ∇²I), were computed using finite differences.
 
-    -   dt_max = 1 / (2·D_max·(1/dx² + 1/dy²))
+All populations were then updated according to the following equations:
 
-    -   dt = 0.5 × dt_max (safety factor)
+-   S\^(n+1) = S\^n + dt·(D_s·∇²S - infection)
 
--   **Algorithm per step** (`sir_step` function):
+-   I\^(n+1) = I\^n + dt·(D_i·∇²I + infection - recovery)
 
-    1.  Apply Neumann boundary conditions to S and I
+-   R\^(n+1) = R\^n + dt·recovery
 
-    2.  Calculate total population N = S + I + R
-
-    3.  Compute reaction terms: infection = β·S·I/N, recovery = γ·I
-
-    4.  Compute diffusion terms: ∇²S and ∇²I using finite differences
-
-    5.  Update:
-
-        -   S\^(n+1) = S\^n + dt·(D_s·∇²S - infection)
-
-        -   I\^(n+1) = I\^n + dt·(D_i·∇²I + infection - recovery)
-
-        -   R\^(n+1) = R\^n + dt·recovery
-
-    6.  Clip negative values to zero
-
--   **Loop**: Iterates for nt steps (nt ≈ 73,000 for 365 days)
-
--   **Storage**: Snapshots saved every 50 steps
+Any negative values were set to zero to ensure physical validity.
 
 ## Simulation of the PDE
 
-function run_simulation
+The simulation was initiated by the run_simulation function, which combined all the model's components. This function initialised the spatial grids with the defined initial conditions and set the epidemiological parameters (β and γ) and the diffusion coefficients (D_s and D_i). Four different scenarios were simulated to compare disease dynamics under varying conditions. The function executed the time loop by repeatedly calling the `sir_step` function to advance the solution forward in time.
+
+The simulation ran for roughly 73,000 time steps, which simulated 365 days. Snapshots were saved every 50 steps for visualisation and analysis. This process was repeated in steps to observe the spatial and temporal evolution of the disease across the grid.
 
 # Visualisation
+
+![Spatial snapshots at selected time points for all scenarios](images/heatmap.png){fig-align="center"}
 
 # Stability Investigation
 

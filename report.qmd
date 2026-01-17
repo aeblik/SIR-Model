@@ -1,134 +1,138 @@
 ---
 title: "SIR-Model"
 author: "Abeli Kai Graham Noirin"
-format: html
-editor: visual
+format: pdf
 ---
 
-## Epidemiological Modeling: SIR Model
+# Introduction
 
-**General Information** The steps, calculations, results, and code of your projects are to be documented in a report. The following points have to be done/answered in any case (points with an \* are optional)
+In this project we consider a spatial version of the Susceptible-Infectious-Recovered (SIR) model. ... Maybe not needed ?
 
-1.  Classify the PDE
-2.  Try to find some information about the PDE and describe it shortly
-3.  Make reasonable assumptions and choices and shortly explain your assumptions and choices:
-    1.  What FD scheme is suited for the problem (Finite Difference Schema)
-    2.  What BC is suited
-    3.  What IC makes sense (data
-        1.  Constants in the equations (e.g. diffusion constant, etc.)
-4.  Discretise the PDE using FD approximations
-5.  Analyse the step-wise order of the error of the FD approximation
-6.  Solve the PDE (for time-dependent PDEs, i.e. you observe how it changes after a certain time)
-7.  Investigate the stability of the scheme (in the case of non-linear PDEs you may simply investigate stability in an experimental fashion)
-8.  Play around with different values of the coefficients.
-9.  Visualise the solution(s)
-10. \* Solve the PDE using various schemes and compare them
-11. \* Make an error estimation for one of the solutions
+# Model Formulation
 
-Comments
+We consider a spatially distributed population in two dimensions over time.
 
--   in some of the equations: The laplace-operator ∆ = ∇2 is defined in two dimensions as
+## Variables and Parameters
 
-$$
-∇^2 = \partial_{xx} + \partial{yy}
-, \\
-, i.e. e.g. \\
-𝚫_u = u_{xx}+u_{yy}
-$$ • Tasks with an asterisk \* are optional. • Integrals turn into sums in a discretised world
+**State variables:**
 
-### Task:
+-   $S(x,y,t)$: density of susceptible individuals
+-   $I(x,y,t)$: density of infectious individuals
+-   $R(x,y,t)$: density of recovered individuals
 
-Description: Simulate the spread of an infectious disease using the Partial Differential Equation (PDE) version of the Susceptible-Infectious-Recovered (SIR) model. Explore the impact of transmission and recovery rates on the spatial dynamics of the epidemic.
+The local total population densitiy is then given by:
 
-$$
-\begin{aligned}
-\frac{\partial S}{\partial t} &= D_i\nabla^2 S -\beta \cdot \frac{S \cdot I}{N} \\
-\frac{\partial I}{\partial t} &= D_i\nabla^2 I + \beta \cdot \frac{S \cdot I}{N} - \gamma \cdot I \\
-\frac{\partial R}{\partial t} &= \gamma \cdot I
-\end{aligned}
-$$
+$$ N(x,y,t) = S(x,y,t) + I(x,y,t) + R(x,y,t). $$
 
-**Parameters and Variables:**
+**Parameters:**
 
--   S : Susceptible individuals density (individuals /cm2)
+-   $\beta > 0$: transmission rate (time$^{-1}$)
+-   $\gamma > 0$: recovery rate (time$^{-1}$)
+-   $D_s \ge 0$: diffusion coefficient of susceptible individuals (space$^2$/time)
+-   $D_i \ge 0$: diffusion coefficient of infected individuals (space$^2$/time)
 
--   I : Infectious individuals density (individuals /cm2)
+The PDE System used, represents spatial movement for the infected compartment through the diffusion rate $D_i$ and for the susceptible compartment through $D_s$.
 
--   R : Recovered individuals density (individuals /cm2)
+## PDE System
 
--   β : Transmission rate ( day −1)
+The spatial SIR model is defined by the following PDE system:
 
--   γ : Recovery rate ( day −1)
+$$ \begin{align} \frac{\partial S}{\partial t} &= D_s \nabla^2 S -\beta \frac{S I}{N}, \tag{1}\\ \frac{\partial I}{\partial t} &= D_i \nabla^2 I + \beta \frac{S I}{N} - \gamma I, \tag{2}\\ \frac{\partial R}{\partial t} &= \gamma I. \tag{3} \end{align} $$
 
--   N : Total population
+where the infection term $\beta \frac{SI}{N}$ transfers individuals from $S$ to $I$, and the recovery term $\gamma I$ transfers individuals from $I$ to $R$. The diffusion terms in $S$ and $I$ model random movement of susceptible and infectious individuals in space, which leads to the spatial spread of the disease.
 
--   Di: Diffusion coefficient for I (cm2/ day )
+## Classification of the PDE
 
--   Ds: Diffusion coefficient for S (cm2/ day )
+The spatial SIR model defined by equations 1 to 3 is a time-dependent, non-linear reaction-diffusion system. The laplacian operator $\nabla^2$ in the diffusion terms make the system second-order and the coupling term $\beta \frac{SI}{N}$ makes it non-linear, as the dependent variables $S$ and $I$ are mutliplied.
 
-**Typical values: (Boundarys)**
+# Model Assumptions and Choices
 
-Ds = 0.01 − 0.1 cm2/ day,
+## FD scheme
 
-Di = 0.01 − 0.1 cm2/ day,
+The spatial SIR system is solved with a finite difference method on a cartesian grid. With a one-step forward update, time is simluated explicitly - the state at $t_i$ is computed directly from the known values at $t_{i-1}$. The spatial derivatives ($\nabla^2$) are approximated using the central finite difference method. Hence, the system is solved using the Forward-Time Central-Space (FTCS) scheme.
 
-β = 0.1 − 0.5 day −1,
+Add citation to Leveque and https://www.medrxiv.org/content/10.1101/2020.06.24.20139071v2.full
 
-γ = 0.05 − 0.2 day −1,
+## Boundary conditions
 
-N = 1000 − 5000
+For the diffusing compartments $S$ and $I$ we apply Neumann boundary conditions to ensure isolation, such that no individuals enter or leave through the space of interest.
 
-### Theory:
+In the discrete implementation, the no-flux condition is enforced by equating boundary values to their adjacent interior values, which yields a vanishing normal derivative at the boundary in the finite-difference sense. (MAYBE THIS PARAGRPAH IS NOT NEEDED)
 
-Description of the PED:
+## Initial conditions
 
-$$
-\begin{aligned}
-\frac{\partial S}{\partial t} &= -\beta \cdot \frac{S \cdot I}{N} \\
-\frac{\partial I}{\partial t} &= D_i\nabla^2 I + \beta \cdot \frac{S \cdot I}{N} - \gamma \cdot I \\
-\frac{\partial R}{\partial t} &= \gamma \cdot I
-\end{aligned}
-$$ 1. Susceptible (S) Equation: ∂t∂S​=−β⋅NS⋅I​
+To simulate the spread of an infectious disease the initial conditions were set such that the population is mostly susceptible, with a small "drop" of infected persons concentrated in the middle of the space and zero recovered individuals. This represents an outbreak starting locally and spreading with diffusion.
 
-This equation describes the rate at which the susceptible population density changes over time.
+## Parameter choices
 
-|  |  |  |
-|------------------------|------------------------|------------------------|
-| Term | Symbol/Component | Simple Explanation |
-| **Rate of Change of** S | ∂t∂S​ | **How quickly the density of susceptible individuals changes** over time. |
-| **Infection Rate (Loss of** S**)** | −β⋅NS⋅I​ | This is the **rate at which susceptible individuals become infected** and move out of the S compartment. Since S decreases due to infection, this term is negative. The rate depends on: |
-|  | β | The **Transmission rate** (how fast the disease spreads upon contact). |
-|  | S⋅I/N | The probability of interaction between susceptible (S) and infectious (I) individuals, normalized by the total population (N). |
+Model parameters are assumed to be constant. Separate diffusion coefficients allow to simulate different different mixture levels between the Susceptible ($S$) and Infected ($I$) compartment. Parameter values are chosen based on the given typical values from the project description.
 
-2\. Infectious (I) Equation: ∂t∂I​=Di​∇2I+β⋅NS⋅I​−γ⋅I
+Parameter magnitudes are varied to explore their influence on the spread patterns and peak infection levels.
 
-This equation is the core of the PDE system, showing how the infectious population density changes due to three processes: spreading, being infected, and recovering.
+# Discretisation
 
-|  |  |  |
-|------------------------|------------------------|------------------------|
-| Term | Symbol/Component | Simple Explanation |
-| **Rate of Change of** I | ∂t∂I​ | **How quickly the density of infectious individuals changes** over time. |
-| **Spatial Diffusion** | Di​∇2I | This is the **diffusion term**, representing the **spatial spreading** or movement of infectious individuals across the region. Diffusion models movement from high density areas to low density areas. |
-|  | Di​ | The **Diffusion coefficient** for I, determining the speed of this spatial movement. |
-|  | ∇2I | The **Laplace operator**, quantifying spatial curvature, or how the infectious density changes with respect to surrounding space. |
-| **New Infections (Gain to** I**)** | +β⋅NS⋅I​ | This is the **gain** of new infectious individuals (coming from the S compartment). This is the same magnitude as the loss term in the S equation, but positive here. |
-| **Recovery Rate (Loss of** I**)** | −γ⋅I | This is the **rate at which infectious individuals recover** and leave the I compartment. Since I decreases due to recovery, this term is negative. |
-|  | γ | The **Recovery rate** (how fast individuals leave the infectious state). |
+## Finite difference discretisation (FD)
 
-3\. Recovered (R) Equation: ∂t∂R​=γ⋅I
+Space is discretised on a uniform grid with spacings $\Delta x$ and $\Delta y$ and time with step size $\Delta t$. Like that continuous fields are approximated with discrete grid points and partial derivatives are replaced by finite differences.
 
-This equation describes the rate at which individuals enter the recovered population.
+## Laplacian operator (2D)
 
-|  |  |  |
-|------------------------|------------------------|------------------------|
-| Term | Symbol/Component | Simple Explanation |
-| **Rate of Change of** R | ∂t∂R​ | **How quickly the density of recovered individuals changes** over time. |
-| **Recovery (Gain to** R**)** | +γ⋅I | This is the **gain** of new recovered individuals (coming from the I compartment). This is the same magnitude as the loss term in the I equation, but positive here. |
+The two-dimensional Laplace operator is defined as the sum of second derivatives in each coordinate direction, $\nabla^2 u = \partial_{xx}u + \partial_{yy}u.$ We discretise $\partial_{xx}u$ and $\partial_{yy}u$ using second-order central differences and sum them to obtain a discrete Laplacian on the grid. Resulting in a 5-point stencil, where every grid point is defined as: $$ \Delta^2u_{i,j} \approx \frac{u_{i+1,j}-2u_{i,j}+u_{i-1,j}}{\Delta x^2}+\frac{u_{i,j+1}-2u_{i,j}+u_{i,j-1}}{\Delta y^2} $$
 
-### What model is it:
+Since we use $\Delta x = \Delta y$ we can consider $\Delta x = \Delta y \equiv h$ for simplicity. Hence the 5-point stencil can be defined as:
 
-A **Standard (Non-Spatial) SIR Model** tracks the progression of a disease within a single, homogeneous population solely over **time**,. These models describe individuals moving between susceptible (S), infectious (I), and recovered (R) states using kinetic terms, often expressed using Ordinary Differential Equations (ODEs) or Discrete Difference Equations.
+$$ \Delta^2u_{i,j} \approx \frac{u_{i+1,j}+u_{i-1,j}+ u_{i,j+1}+u_{i,j-1}-4u_{i,j}}{h^2} $$
 
-A **Reaction-Diffusion System** is a mathematical classification for complex phenomena described by Partial Differential Equations (PDEs) that depend on both time and space,. This system combines two components: **Reaction** (local changes, representing kinetic transitions or biological feedback loops) and **Diffusion** (spatial transport or spreading from areas of high concentration to low concentration,).
+Add citation to Leveque
 
-A **Spatial SIR Model** is explicitly an example of a Reaction-Diffusion system. The key difference is that the Spatial SIR incorporates spatial variables into its equations, simulating disease spread over **time AND space**. The inherent disease dynamics are the "reaction" part, while the spread of infectious individuals across a geographic region (via the ∇2 term) is the "diffusion" part, requiring PDEs for its formulation.
+## Boundary conditions utilities
+
+The no-flux boundary condition previously mentioned is enforced by setting each boundary value equal to its closest interior neighbor. This dissolves the one-sided normal derivative at the boundary, while keeping interior update formulas unchanged.
+
+# Order of Error
+
+## Step-wise order of the FD approximation
+
+The forward time discretisation is first-order accurate in time. Hence, the error scales like $\mathcal{O}(\Delta t)$. The spatial discretisation used for the diffusion terms are second-order accurate, yielding errors of order $\mathcal{O}(\Delta x^2)$ and $\mathcal{O}(\Delta y^2)$ respectively.
+
+For stable choices of the time step, i.e. the time step is sufficiently small relative to the spatial grid sizes, the error decreases as $\Delta t \to 0$ and $\Delta x, \Delta y \to 0$. Specifically, the time step must satisfy: $\Delta t \le \frac{1}{2D\left(\frac{1}{\Delta x^2} + \frac{1}{\Delta y^2}\right)}$
+
+$\Delta t \le C \Delta x^2$
+
+# Implementation
+
+The model simulates the spread of disease across a two-dimensional grid, in which each cell can be susceptible (S), infected (I) or recovered (R). Rather than treating the population as one large group, it tracks how the disease spreads spatially, as if observing it move across a map.
+
+How the Disease Spreads
+
+The model uses the finite difference method to calculate how people (and therefore disease) move between neighbouring cells. The model therefore looks at each cell and its four neighbours. The diffusion coefficient describes the speed of diffusion between neighbours. This triggers a diffusion effect, where the high concentration naturally flows towards the lower concentration. The model was set up with zero-flux Neumann boundaries. This means that the system is closed and that no one can enter or leave the edges. This reflects a real-world scenario where the borders of a country are closed in order to minimise the international spread of a disease.
+
+The Disease Dynamics
+
+Three specific situations occurred for each time step. First, susceptible persons became infected as a result of contact with an infected person. Infected persons recovered based on the recovery rate (γ). The three populations (S, I and R) moved around the grid.
+
+## Initial Conditions Setup
+
+The model was initialised with a spatial domain of a 100x100 grid representing a 10,000-cell square area.
+
+Separate grids were created for each state (S, I and R). The infected population started with a small number of infected individuals located in the centre of the grid (1% of the total population). The susceptible population (99% of the total population) was distributed equally across the grid and the recovered population was initially zero everywhere.
+
+The infection was introduced using a Gaussian distribution. This created a smooth circular infection zone that gradually disappeared from the centre outwards.
+
+## Time stepping routine
+
+The model uses the Euler method, following a step-wise approach. The model used the Euler method in a stepwise manner. The time step was chosen to ensure numerical stability. The maximum stable time step was calculated as dt\_(max) = 1/(2·D\_(max) · (1/dx² + 1/dy²)). The actual time step used was dt = 0.5 × dt\_(max), incorporating a safety factor of 0.5 to prevent the solution from becoming unstable during the simulation.
+
+At each time step implemented in the sir_step function, Neumann boundary conditions were applied to the susceptible and infected populations. The total population was calculated as N = S + I + R, and the reaction terms for infection (β·S·I/N) and recovery (γ·I), as well as the diffusion terms (∇²S and ∇²I), were computed using finite differences.
+
+All populations were then updated according to the following equations:
+
+-   S\^(n+1) = S\^n + dt·(D_s·∇²S - infection)
+
+-   I\^(n+1) = I\^n + dt·(D_i·∇²I + infection - recovery)
+
+-   R\^(n+1) = R\^n + dt·recovery
+
+Any negative values were set to zero to ensure physical validity.
+
+The simulation ran for roughly 73,000 time steps, which simulated 365 days. Snapshots were saved every 50 steps for visualisation and analysis. This process was repeated in steps to observe the spatial and temporal evolution of the disease across the grid.
