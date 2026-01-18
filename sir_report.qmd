@@ -33,35 +33,7 @@ In this project we consider a spatial version of the Susceptible-Infectious-Reco
 
 # Model Formulation
 
-We consider a spatially distributed population in two dimensions over time.
-
-## Variables and Parameters
-
-**State variables:**
-
--   $S(x,y,t)$: density of susceptible individuals\
--   $I(x,y,t)$: density of infectious individuals\
--   $R(x,y,t)$: density of recovered individuals
-
-The local total population densitiy is then given by:
-
-$$
-N(x,y,t) = S(x,y,t) + I(x,y,t) + R(x,y,t).
-$$
-
-**Parameters:**
-
--   $\beta > 0$: transmission rate (time$^{-1}$)\
--   $\gamma > 0$: recovery rate (time$^{-1}$)\
--   $D_s \ge 0$: diffusion coefficient of susceptible individuals (space$^2$/time)
--   $D_i \ge 0$: diffusion coefficient of infected individuals (space$^2$/time)
-
-The PDE System used, represents spatial movement for the infected compartment through the diffusion rate $D_i$ and for the susceptible compartment through $D_s$.
-
-## PDE System
-
-The spatial SIR model is defined by the following PDE system:
-
+We consider a spatially distributed population in two dimensions over time and model the spread of an infectious disease. The population density $N(x,y,t)$ is conserved and composed of three compartments: Susceptible $(S)$, Infectious $(I)$, and Recovered $(R)$. The PDE system is given by:
 
 \begin{align}
 \frac{\partial S}{\partial t} &= D_s \nabla^2 S -\beta \frac{S I}{N}, \tag{1}\\
@@ -69,70 +41,55 @@ The spatial SIR model is defined by the following PDE system:
 \frac{\partial R}{\partial t} &= \gamma I. \tag{3}
 \end{align}
 
+With the following parameters:
+-   $\beta > 0$: transmission rate (time$^{-1}$)\
+-   $\gamma > 0$: recovery rate (time$^{-1}$)\
+-   $D_s \ge 0$: diffusion coefficient of susceptible individuals (space$^2$/time)
+-   $D_i \ge 0$: diffusion coefficient of infected individuals (space$^2$/time)
 
-where the infection term $\beta \frac{SI}{N}$ transfers individuals from $S$ to $I$, and the recovery term $\gamma I$ transfers individuals from $I$ to $R$. The diffusion terms in $S$ and $I$ model random movement of susceptible and infectious individuals in space, which leads to the spatial spread of the disease.
-
-## Classification of the PDE
+The infection term $\beta \frac{SI}{N}$ transfers individuals from $S$ to $I$, and the recovery term $\gamma I$ transfers individuals from $I$ to $R$. The diffusion terms in $S$ and $I$ model random movement of individuals, leading to the spatial spread of the disease.
 
 The spatial SIR model defined by equations 1 to 3 is a time-dependent, non-linear reaction-diffusion system. The laplacian operator $\nabla^2$ in the diffusion terms make the system second-order and the coupling term $\beta \frac{SI}{N}$ makes it non-linear, as the dependent variables $S$ and $I$ are mutliplied.
 
 # Model Assumptions and Choices
 
-## FD scheme
+To simulate the system, we make the following assumptions and choices:
 
-The spatial SIR system is solved with a finite difference method on a cartesian grid. With a one-step forward update, time is simluated explicitly - the state at $t_i$ is computed directly from the known values at $t_{i-1}$. The spatial derivatives ($\nabla^2$) are approximated using the central finite difference method. Hence, the system is solved using the Forward-Time Central-Space (FTCS) scheme.
+- Finite Difference Scheme: We employ the Forward-Time Central-Space (FTCS) scheme. This explicit method simulates the state at $t_i$ directly from the known values at $t_{i-1}$, while spatial derivatives ($\nabla^2$) are approximated using the central finite difference method.
 
-Add citation to Leveque and https://www.medrxiv.org/content/10.1101/2020.06.24.20139071v2.full
+- Boundary Conditions: We assume an isolated population with no movement in or out of the defined space. This is enforced with Neumann boundary conditions (no-flux is implemented by equating boundary values to their neighbouring interior values) to the compartments $S$ and $I$ - $R$ does not diffuse.
 
-## Boundary conditions
+- Initial Conditions: The model is initialized with a uniformly distributed susceptible population and a small localized concentration of infected individuals $(I)$ is planted in the center of the grid to simulate the outbreak.
 
-For the diffusing compartments $S$ and $I$ we apply Neumann boundary conditions to ensure isolation, such that no individuals enter or leave through the space of interest.
+- Parameter Choices: Model parameters are assumed to be constant. Separate diffusion coefficients allow to model different behaviours of Susceptible $(S)$ and Infected $(I)$ individuals. Parameter values are chosen based on the given typical values in the project description and varied to explore their influence on the model.
 
-In the discrete implementation, the no-flux condition is enforced by equating boundary values to their adjacent interior values, which yields a vanishing normal derivative at the boundary in the finite-difference sense. (MAYBE THIS PARAGRPAH IS NOT NEEDED)
+CITATION LEVEQUE AND https://www.medrxiv.org/content/10.1101/2020.06.24.20139071v2.full
 
-## Initial conditions
-
-To simulate the spread of an infectious disease the initial conditions were set such that the population is mostly susceptible, with a small "drop" of infected persons concentrated in the middle of the space and zero recovered individuals. This represents an outbreak starting locally and spreading with diffusion.
-
-## Parameter choices
-
-Model parameters are assumed to be constant. Separate diffusion coefficients allow to simulate different different mixture levels between the Susceptible ($S$) and Infected ($I$) compartment. Parameter values are chosen based on the given typical values from the project description.
-
-Parameter magnitudes are varied to explore their influence on the spread patterns and peak infection levels.
 
 # Discretisation
 
-## Finite difference discretisation (FD)
+Space is discretised on a uniform grid with spacings $h = \Delta x = \Delta y$ and time with step size $\Delta t$. The differential operators are approximated as follows:
 
-Space is discretised on a uniform grid with spacings $\Delta x$ and $\Delta y$ and time with step size $\Delta t$. Like that continuous fields are approximated with discrete grid points and partial derivatives are replaced by finite differences.
-
-## Laplacian operator (2D)
-
-The two-dimensional Laplace operator is defined as the sum of second derivatives in each coordinate direction, $\nabla^2 u = \partial_{xx}u + \partial_{yy}u.$ We discretise $\partial_{xx}u$ and $\partial_{yy}u$ using second-order central differences and sum them to obtain a discrete Laplacian on the grid. Resulting in a 5-point stencil, where every grid point is defined as: $$
-\Delta^2u_{i,j} \approx \frac{u_{i+1,j}-2u_{i,j}+u_{i-1,j}}{\Delta x^2}+\frac{u_{i,j+1}-2u_{i,j}+u_{i,j-1}}{\Delta y^2}
-$$
-
-Since we use $\Delta x = \Delta y$ we can consider $\Delta x = \Delta y \equiv h$ for simplicity. Hence the 5-point stencil can be defined as:
+- Spatial Discretisaton: The Laplacian operator $\nabla^2 u$ in the diffusion term is approximated using a five-point stencil, which is second-order accurate. For any grid point (i,j):
 
 $$
 \Delta^2u_{i,j} \approx \frac{u_{i+1,j}+u_{i-1,j}+ u_{i,j+1}+u_{i,j-1}-4u_{i,j}}{h^2}
 $$
 
-Add citation to Leveque
+- Time Stepping: We use the explicit Forward Euler method to advance the solution in time. Following the general discrete-time formulation $x_{n+1}=f(x_n)$ the state at the next time step is computed directly from the current values:
+$$
+u^{n+1} = u^n + \Delta t \cdot \frac{\partial u^n}{\partial t}
+$$
 
-## Boundary conditions utilities
+Numerical boundary conditions are enforced by the previosuly mentioned Neumann boundary conditions.
 
-The no-flux boundary condition previously mentioned is enforced by setting each boundary value equal to its closest interior neighbor. This dissolves the one-sided normal derivative at the boundary, while keeping interior update formulas unchanged.
+# Stability and Error Analysis
 
-# Order of Error
+- Step-wise Order of Error: The FTCS scheme combines a forward difference in time ($\mathcal{O}(\Delta t)$) and a central difference in space ($\mathcal{O}(h^2)$). Hence, the local truncation error of the approximation scales like $\mathcal{O}(\Delta t,h^2)$.
+- Stability Condition: As an explicit method, the FTCS scheme is only conditionally stable. To ensure numerical stability, the time step $\Delta t$ is constrained by the diffusion limit (the time step must be sufficiently small relative to the spatial grid size):
+$\Delta t \le \frac{1}{2D\left(\frac{1}{\Delta x^2} + \frac{1}{\Delta y^2}\right)}$
 
-## Step-wise order of the FD approximation
-
-The forward time discretisation is first-order accurate in time. Hence, the error scales like $\mathcal{O}(\Delta t)$. The spatial discretisation used for the diffusion terms are second-order accurate, yielding errors of order $\mathcal{O}(\Delta x^2)$ and $\mathcal{O}(\Delta y^2)$ respectively.
-
-For stable choices of the time step, i.e. the time step is sufficiently small relative to the spatial grid sizes, the error decreases as $\Delta t \to 0$ and $\Delta x, \Delta y \to 0$. Specifically, the time step must satisfy: $\Delta t \le \frac{1}{2D\left(\frac{1}{\Delta x^2} + \frac{1}{\Delta y^2}\right)}$
-
-$\Delta t \le C \Delta x^2$
+This restriction follows from a method of lines stability analysis. Spatial discretisation of the diffusion term leads to a linear ODE system $\dot{\mathbf{u}} = D\,L\,\mathbf{u}$, where $L$ is the discrete Laplacian matrix. For Forward Eulor time integration is stable only if the condition $1 + \Delta t\,D\,\lambda \in [-1,1]$ is satisfied for all eigenvalues $\lambda$ of $L$, whose largest magnited scales as $4(\Delta x^{-2} + \Delta y^{-2})$, yielding the stated restriction on $\Delta t$. In our implementation an additional safety factor of $0.5$ to this limit. 
 
 # Implementation
 
