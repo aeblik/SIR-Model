@@ -42,6 +42,7 @@ We consider a spatially distributed population in two dimensions over time and m
 \end{align}
 
 With the following parameters:
+
 -   $\beta > 0$: transmission rate (time$^{-1}$)\
 -   $\gamma > 0$: recovery rate (time$^{-1}$)\
 -   $D_s \ge 0$: diffusion coefficient of susceptible individuals (space$^2$/time)
@@ -56,11 +57,8 @@ The spatial SIR model defined by equations 1 to 3 is a time-dependent, non-linea
 To simulate the system, we make the following assumptions and choices:
 
 - Finite Difference Scheme: We employ the Forward-Time Central-Space (FTCS) scheme. This explicit method simulates the state at $t_i$ directly from the known values at $t_{i-1}$, while spatial derivatives ($\nabla^2$) are approximated using the central finite difference method.
-
 - Boundary Conditions: We assume an isolated population with no movement in or out of the defined space. This is enforced with Neumann boundary conditions (no-flux is implemented by equating boundary values to their neighbouring interior values) to the compartments $S$ and $I$ - $R$ does not diffuse.
-
 - Initial Conditions: The model is initialized with a uniformly distributed susceptible population and a small localized concentration of infected individuals $(I)$ is planted in the center of the grid to simulate the outbreak.
-
 - Parameter Choices: Model parameters are assumed to be constant. Separate diffusion coefficients allow to model different behaviours of Susceptible $(S)$ and Infected $(I)$ individuals. Parameter values are chosen based on the given typical values in the project description and varied to explore their influence on the model.
 
 CITATION LEVEQUE AND https://www.medrxiv.org/content/10.1101/2020.06.24.20139071v2.full
@@ -89,7 +87,7 @@ Numerical boundary conditions are enforced by the previosuly mentioned Neumann b
 - Stability Condition: As an explicit method, the FTCS scheme is only conditionally stable. To ensure numerical stability, the time step $\Delta t$ is constrained by the diffusion limit (the time step must be sufficiently small relative to the spatial grid size):
 $\Delta t \le \frac{1}{2D\left(\frac{1}{\Delta x^2} + \frac{1}{\Delta y^2}\right)}$
 
-This restriction follows from a method of lines stability analysis. Spatial discretisation of the diffusion term leads to a linear ODE system $\dot{\mathbf{u}} = D\,L\,\mathbf{u}$, where $L$ is the discrete Laplacian matrix. For Forward Eulor time integration is stable only if the condition $1 + \Delta t\,D\,\lambda \in [-1,1]$ is satisfied for all eigenvalues $\lambda$ of $L$, whose largest magnited scales as $4(\Delta x^{-2} + \Delta y^{-2})$, yielding the stated restriction on $\Delta t$. In our implementation an additional safety factor of $0.5$ to this limit. 
+    This restriction follows from a method of lines stability analysis. Spatial discretisation of the diffusion term leads to a linear ODE system $\dot{\mathbf{u}} = D\,L\,\mathbf{u}$, where $L$ is the discrete Laplacian matrix. For Forward Eulor time integration is stable only if the condition $1 + \Delta t\,D\,\lambda \in [-1,1]$ is satisfied for all eigenvalues $\lambda$ of $L$, whose largest magnited scales as $4(\Delta x^{-2} + \Delta y^{-2})$, yielding the stated restriction on $\Delta t$. In our implementation an additional safety factor of $0.5$ to this limit. 
 
 # Implementation
 
