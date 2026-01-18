@@ -1,22 +1,41 @@
 ---
-title: "Epidemiological Modeling: Spatial SIR (PDE) Model"
-subtitle: "Project Report Mathematical Modelling; ACLS AS25"
-author: "Noirin Graham, Kai Aebli"
-date: "2026-01-19"
 format: 
-    html:
-        toc: true
+    pdf:
+        toc: false
         toc-depth: 3
         number-sections: true
-        code-fold: true
-        code-tools: true
-        theme: cosmo
-        df-print: paged
-        html-math-method: 
-            method: mathjax
-            url: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
-            macros: {}
-            tags: all
+        code-fold: false
+        documentclass: article
+        geometry: margin=1in
+        fig-pos: 'H'
+        include-in-header:
+            text: |
+                \usepackage{float}
+                \usepackage{graphicx}
+                \usepackage{fancyhdr}
+                \AtBeginDocument{\pagenumbering{gobble}}
+        include-before-body:
+            text: |
+                \begin{titlepage}
+                \centering
+                \vspace*{2cm}
+                {\Huge\bfseries Epidemiological Modeling: Spatial SIR (PDE) Model\par}
+                \vspace{1cm}
+                {\Large Project Report Mathematical Modelling; ACLS AS25\par}
+                \vspace{2cm}
+                {\large Noirin Graham, Kai Aebli\par}
+                \vspace{0.5cm}
+                {\large 2026-01-19\par}
+                \vfill
+                \includegraphics[width=0.8\textwidth]{images/Model_over_time.png}
+                \vspace{1cm}
+                {\large SIR-Model: S, I, R over time\par}
+                \vfill
+                \end{titlepage}
+                \newpage
+                \tableofcontents
+                \newpage
+                \pagenumbering{arabic}
 execute:
     echo: true
     warning: false
@@ -24,8 +43,6 @@ execute:
     cache: false
 jupyter: python3
 ---
-
-![SIR-Model: S, I, R over time](images/Model_over_time.png)
 
 # Introduction
 
@@ -56,83 +73,60 @@ The spatial SIR model defined by equations 1 to 3 is a time-dependent, non-linea
 
 To simulate the system, we make the following assumptions and choices:
 
-- Finite Difference Scheme: We employ the Forward-Time Central-Space (FTCS) scheme. This explicit method simulates the state at $t_i$ directly from the known values at $t_{i-1}$, while spatial derivatives ($\nabla^2$) are approximated using the central finite difference method.
-- Boundary Conditions: We assume an isolated population with no movement in or out of the defined space. This is enforced with Neumann boundary conditions (no-flux is implemented by equating boundary values to their neighbouring interior values) to the compartments $S$ and $I$ - $R$ does not diffuse.
-- Initial Conditions: The model is initialized with a uniformly distributed susceptible population and a small localized concentration of infected individuals $(I)$ is planted in the center of the grid to simulate the outbreak.
-- Parameter Choices: Model parameters are assumed to be constant. Separate diffusion coefficients allow to model different behaviours of Susceptible $(S)$ and Infected $(I)$ individuals. Parameter values are chosen based on the given typical values in the project description and varied to explore their influence on the model.
+-   Finite Difference Scheme: We employ the Forward-Time Central-Space (FTCS) scheme. This explicit method simulates the state at $t_i$ directly from the known values at $t_{i-1}$, while spatial derivatives ($\nabla^2$) are approximated using the central finite difference method.
+-   Boundary Conditions: We assume an isolated population with no movement in or out of the defined space. This is enforced with Neumann boundary conditions (no-flux is implemented by equating boundary values to their neighbouring interior values) to the compartments $S$ and $I$ - $R$ does not diffuse.
+-   Initial Conditions: The model is initialized with a uniformly distributed susceptible population and a small localized concentration of infected individuals $(I)$ is planted in the center of the grid to simulate the outbreak.
+-   Parameter Choices: Model parameters are assumed to be constant. Separate diffusion coefficients allow to model different behaviours of Susceptible $(S)$ and Infected $(I)$ individuals. Parameter values are chosen based on the given typical values in the project description and varied to explore their influence on the model.
 
 CITATION LEVEQUE AND https://www.medrxiv.org/content/10.1101/2020.06.24.20139071v2.full
-
 
 # Discretisation
 
 Space is discretised on a uniform grid with spacings $h = \Delta x = \Delta y$ and time with step size $\Delta t$. The differential operators are approximated as follows:
 
-- Spatial Discretisaton: The Laplacian operator $\nabla^2 u$ in the diffusion term is approximated using a five-point stencil, which is second-order accurate. For any grid point (i,j):
+-   Spatial Discretisaton: The Laplacian operator $\nabla^2 u$ in the diffusion term is approximated using a five-point stencil, which is second-order accurate. For any grid point (i,j):
 
 $$
 \Delta^2u_{i,j} \approx \frac{u_{i+1,j}+u_{i-1,j}+ u_{i,j+1}+u_{i,j-1}-4u_{i,j}}{h^2}
 $$
 
-- Time Stepping: We use the explicit Forward Euler method to advance the solution in time. Following the general discrete-time formulation $x_{n+1}=f(x_n)$ the state at the next time step is computed directly from the current values:
-$$
-u^{n+1} = u^n + \Delta t \cdot \frac{\partial u^n}{\partial t}
-$$
+-   Time Stepping: We use the explicit Forward Euler method to advance the solution in time. Following the general discrete-time formulation $x_{n+1}=f(x_n)$ the state at the next time step is computed directly from the current values: $$
+    u^{n+1} = u^n + \Delta t \cdot \frac{\partial u^n}{\partial t}
+    $$
 
 Numerical boundary conditions are enforced by the previosuly mentioned Neumann boundary conditions.
 
 # Stability and Error Analysis
 
-- Step-wise Order of Error: The FTCS scheme combines a forward difference in time ($\mathcal{O}(\Delta t)$) and a central difference in space ($\mathcal{O}(h^2)$). Hence, the local truncation error of the approximation scales like $\mathcal{O}(\Delta t,h^2)$.
-- Stability Condition: As an explicit method, the FTCS scheme is only conditionally stable. To ensure numerical stability, the time step $\Delta t$ is constrained by the diffusion limit (the time step must be sufficiently small relative to the spatial grid size):
-$\Delta t \le \frac{1}{2D\left(\frac{1}{\Delta x^2} + \frac{1}{\Delta y^2}\right)}$
+-   Step-wise Order of Error: The FTCS scheme combines a forward difference in time ($\mathcal{O}(\Delta t)$) and a central difference in space ($\mathcal{O}(h^2)$). Hence, the local truncation error of the approximation scales like $\mathcal{O}(\Delta t,h^2)$.
 
-    This restriction follows from a method of lines stability analysis. Spatial discretisation of the diffusion term leads to a linear ODE system $\dot{\mathbf{u}} = D\,L\,\mathbf{u}$, where $L$ is the discrete Laplacian matrix. For Forward Eulor time integration is stable only if the condition $1 + \Delta t\,D\,\lambda \in [-1,1]$ is satisfied for all eigenvalues $\lambda$ of $L$, whose largest magnited scales as $4(\Delta x^{-2} + \Delta y^{-2})$, yielding the stated restriction on $\Delta t$. In our implementation an additional safety factor of $0.5$ to this limit. 
+-   Stability Condition: As an explicit method, the FTCS scheme is only conditionally stable. To ensure numerical stability, the time step $\Delta t$ is constrained by the diffusion limit (the time step must be sufficiently small relative to the spatial grid size): $\Delta t \le \frac{1}{2D\left(\frac{1}{\Delta x^2} + \frac{1}{\Delta y^2}\right)}$
+
+    This restriction follows from a method of lines stability analysis. Spatial discretisation of the diffusion term leads to a linear ODE system $\dot{\mathbf{u}} = D\,L\,\mathbf{u}$, where $L$ is the discrete Laplacian matrix. For Forward Eulor time integration is stable only if the condition $1 + \Delta t\,D\,\lambda \in [-1,1]$ is satisfied for all eigenvalues $\lambda$ of $L$, whose largest magnited scales as $4(\Delta x^{-2} + \Delta y^{-2})$, yielding the stated restriction on $\Delta t$. In our implementation an additional safety factor of $0.5$ to this limit.
 
 # Implementation
 
-The model simulates the spread of disease across a two-dimensional grid, in which each cell can be susceptible (S), infected (I) or recovered (R). Rather than treating the population as one large group, it tracks how the disease spreads spatially, as if observing it move across a map.
-
-The model uses the finite difference method to calculate how people (and therefore disease) move between neighbouring cells. The model therefore looks at each cell and its four neighbours. The diffusion coefficient describes the speed of diffusion between neighbours. This triggers a diffusion effect, where the high concentration naturally flows towards the lower concentration. The model was set up with zero-flux Neumann boundaries.
-
-Three specific situations occurred for each time step. First, susceptible persons became infected as a result of contact with an infected person. Infected persons recovered based on the recovery rate (γ). The three populations (S, I and R) moved around the grid.
+The model simulates disease spread across a 100×100 grid using the finite difference method. Rather than treating the population as one large group, it tracks how the disease spreads spatially, as if observing it move across a map. Each cell tracks susceptible (S), infected (I), and recovered (R) populations. Diffusion between neighbouring cells is controlled by coefficients $D_s$ and $D_i$, with zero-flux Neumann boundaries.
 
 ## Initial Conditions Setup
 
-The model was initialised with a spatial domain of a 100x100 grid representing a 10,000-cell square area.
-
-Separate grids were created for each state (S, I and R). The infected population started with a small number of infected individuals located in the centre of the grid (1% of the total population). The susceptible population (99% of the total population) was distributed equally across the grid and the recovered population was initially zero everywhere.
-
-The infection was introduced using a Gaussian distribution. This created a smooth circular infection zone that gradually disappeared from the centre outwards.
+Separate grids were created for each state (S, I and R). The infected population (1% of total) was initialized at the grid center using a Gaussian distribution, with susceptible individuals (99%) uniformly distributed and recovered population initially zero.
 
 ## Time stepping routine
 
-The model uses the Euler method, following a step-wise approach. The model used the Euler method in a stepwise manner. The time step was chosen to ensure numerical stability. The maximum stable time step was calculated as dt\_(max) = 1/(2·D\_(max) · (1/dx² + 1/dy²)). The actual time step used was dt = 0.5 × dt\_(max), incorporating a safety factor of 0.5 to prevent the solution from becoming unstable during the simulation.
+The model uses the Euler method, following a step-wise approach. The time step was chosen to ensure numerical stability. The maximum stable time step was calculated as $dt_{\text{max}} = \frac{1}{2 \cdot D_{\text{max}} \cdot (\frac{1}{dx^2} + \frac{1}{dy^2})}$. The actual time step used was $dt = 0.5 \times dt_{\text{max}}$, incorporating a safety factor of 0.5 to prevent the solution from becoming unstable during the simulation.
 
-At each time step implemented in the sir_step function, Neumann boundary conditions were applied to the susceptible and infected populations. The total population was calculated as N = S + I + R, and the reaction terms for infection (β·S·I/N) and recovery (γ·I), as well as the diffusion terms (∇²S and ∇²I), were computed using finite differences.
+At each time step implemented in the sir_step function, Neumann boundary conditions were applied to the susceptible and infected populations. The total population was calculated as $N = S + I + R$, and the reaction terms for infection ($\beta \frac{SI}{N}$) and recovery ($\gamma I$), as well as the diffusion terms ($\nabla^2 S$ and \$\\nabla\^2 I\$), were computed using finite differences.
 
-All populations were then updated according to the following equations:
-
--   S\^(n+1) = S\^n + dt·(D_s·∇²S - infection)
-
--   I\^(n+1) = I\^n + dt·(D_i·∇²I + infection - recovery)
-
--   R\^(n+1) = R\^n + dt·recovery
-
-Any negative values were set to zero to ensure physical validity.
+All populations were then updated according to $S^{n+1} = S^n + dt \cdot (D_s \nabla^2 S - \text{infection})$, $I^{n+1} = I^n + dt \cdot (D_i \nabla^2 I + \text{infection} - \text{recovery})$, and $R^{n+1} = R^n + dt \cdot \text{recovery}$. Any negative values were set to zero to ensure physical validity.
 
 ## Simulation of the PDE
 
-The simulation was initiated by the `run_simulation` function, which combined all the model's components. This function initialised the spatial grids with the defined initial conditions and set the epidemiological parameters (β and γ) and the diffusion coefficients (D_s and D_i). Four different scenarios were simulated to compare disease dynamics under varying conditions.
+The simulation was initiated by the `run_simulation` function, which combined all the model's components. This function initialised the spatial grids with the defined initial conditions and set the epidemiological parameters ($\beta$ and $\gamma$) and the diffusion coefficients ($D_s$ and $D_i$). Four scenarios were simulated over 365 days (\~73,000 steps). Snapshots were saved every 50 steps for analysis.
 
--   Low β, Low γ: Slow spread, slow recovery
--   High β, Low γ: Fast spread, slow recovery
--   Low β, High γ: Slow spread, fast recovery
--   High β, High γ: Fast spread, fast recovery
-
-The function executed the time loop by repeatedly calling the `sir_step` function to advance the solution forward in time.
-
-The simulation ran for roughly 73,000 time steps, which simulated 365 days. Snapshots were saved every 50 steps for visualisation and analysis. This process was repeated in steps to observe the spatial and temporal evolution of the disease across the grid.
+| Scenario 1 | Scenario 2 | Scenario 3 | Scenario 4 |
+|----|----|----|----|
+| low $\beta$  low $\gamma$ | high $\beta$ low $\gamma$ | low $\beta$ high $\gamma$ | high $\beta$  high $\gamma$ |
 
 # Stability Investigation
 
@@ -142,7 +136,7 @@ Grid x 0.15 (lösung nicht mehr stimmen)
 
 # Parameter Studies
 
-The following plot shows the impact of different transmission (β) and recovery (γ) rates on the spatial dynamics. Each row shows a different scenario. These scenarios are described in the section "Simulation of the PDE". Each column shows a different day. The countdown begins at day 0 and ends at day 365. Each scenario begins with a small number of infected individuals in the middle.
+The following plot shows the impact of different transmission ($\beta$) and recovery ($\gamma$) rates on the spatial dynamics. Each row shows a different scenario. These scenarios are described in the section "Simulation of the PDE". Each column shows a different day. The countdown begins at day 0 and ends at day 365. Each scenario begins with a small number of infected individuals in the middle.
 
 The plot clearly shows that when transmission is low and the recovery rate is high, the number of infected people on the last day was the highest. It can be observed that a high transmission causes the disease to spread faster towards the edges, while a low transmission keeps the infected population for a longer time concentrated in the middle.
 
