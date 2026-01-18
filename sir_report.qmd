@@ -27,7 +27,7 @@ format:
                 \vspace{0.5cm}
                 {\large 2026-01-19\par}
                 \vfill
-                \includegraphics[width=0.8\textwidth]{images/Model_over_time.png}
+                \includegraphics[width=0.9\textwidth]{images/Model_over_time.png}
                 \vspace{1cm}
                 {\large SIR-Model: S, I, R over time\par}
                 \vfill
@@ -130,6 +130,9 @@ The simulation was initiated by the `run_simulation` function, which combined al
 
 # Stability Investigation
 
+
+![Stability investigation by increasing the time step](images/stability_check.png.png){fig-align="center"}
+
 dt_max detlat
 
 Grid x 0.15 (lösung nicht mehr stimmen)
@@ -141,3 +144,15 @@ The following plot shows the impact of different transmission ($\beta$) and reco
 The plot clearly shows that when transmission is low and the recovery rate is high, the number of infected people on the last day was the highest. It can be observed that a high transmission causes the disease to spread faster towards the edges, while a low transmission keeps the infected population for a longer time concentrated in the middle.
 
 ![Spatial snapshots at selected time points for all scenarios](images/heatmap.png){fig-align="center"}
+
++ Lineplot
+
+Heatmap beta vs gamma + Time to reach boundary
+
+# References
+
+LeVeque, R. J. (2007). Finite Difference Methods for Ordinary and Partial Differential Equations. Society for Industrial and Applied Mathematics. https://doi.org/10.1137/1.9780898717839
+Rabbani, H. S., Osei-Bonsu, K., Abbasi, J., Osei-Bonsu, P. K., & Seers, T. D. (2020). Modelling The Spread of COVID-19 Using The Fundamental Principles of Fluid Dynamics (p. 2020.06.24.20139071). medRxiv. https://doi.org/10.1101/2020.06.24.20139071
+
+
+
