@@ -11,6 +11,7 @@ format:
         include-in-header:
             text: |
                 \usepackage{float}
+                \usepackage{wrapfig}
                 \usepackage{graphicx}
                 \usepackage{fancyhdr}
                 \AtBeginDocument{\pagenumbering{gobble}}
@@ -97,13 +98,11 @@ Numerical boundary conditions are enforced by the previously mentioned Neumann b
 
 # Stability and Error Analysis
 
--   Step-wise Order of Error: The FTCS scheme combines a forward difference in time ($\mathcal{O}(\Delta t)$) and a central difference in space ($\mathcal{O}(h^2)$). Hence, the local truncation error of the approximation scales like $\mathcal{O}(\Delta t,h^2)$.
+-   Step-wise Order of Error: The FTCS scheme combines a forward difference in time ($\mathcal{O}(\Delta t)$) and a central difference in space ($\mathcal{O}(h^2)$). Hence, the local truncation error of the approximation scales like $\mathcal{O}(\Delta t,h^2)$ (Leveque, 2007).
 
 -   Stability Condition: As an explicit method, the FTCS scheme is only conditionally stable. To ensure numerical stability, the time step $\Delta t$ is constrained by the diffusion limit (the time step must be sufficiently small relative to the spatial grid size): $\Delta t \le \frac{1}{2D\left(\frac{1}{\Delta x^2} + \frac{1}{\Delta y^2}\right)}$
 
-    This restriction follows from a method of lines stability analysis. Spatial discretisation of the diffusion term leads to a linear ODE system $\dot{\mathbf{u}} = D\,L\,\mathbf{u}$, where $L$ is the discrete Laplacian matrix. Forward Euler time integration is stable only if the condition $1 + \Delta t\,D\,\lambda \in [-1,1]$ is satisfied for all eigenvalues $\lambda$ of $L$, whose largest magnitude scales as $4(\Delta x^{-2} + \Delta y^{-2})$, yielding the stated restriction on $\Delta t$. In our implementation an additional safety factor of $0.5$ was applied to this limit.
-
-(Leveque, 2007)
+    This restriction follows from a method of lines stability analysis. Spatial discretisation of the diffusion term leads to a linear ODE system $\dot{\mathbf{u}} = D\,L\,\mathbf{u}$, where $L$ is the discrete Laplacian matrix. Forward Euler time integration is stable only if the condition $1 + \Delta t\,D\,\lambda \in [-1,1]$ is satisfied for all eigenvalues $\lambda$ of $L$, whose largest magnitude scales as $4(\Delta x^{-2} + \Delta y^{-2})$, yielding the stated restriction on $\Delta t$ (Leveque, 2007). In our implementation an additional safety factor of $0.5$ was applied to this limit.
 
 # Implementation
 
@@ -131,23 +130,26 @@ The simulation was initiated by the `run_simulation` function, which combined al
 
 # Stability Investigation
 
-We tested the stability restriction described in Section 5 by running the same simulation with two different time steps:  $\Delta t = 0.5\Delta t_{\max}$ (stable), and $\Delta t = 1.5\Delta t_{\max}$ (unstable), illustrated in @fig-stability-invesitgation. With the stable time step the solution remains finite and non-negative. Once the time step exceeds the theoretical maximum value the solution explodes and becomes non-finite at $t \approx 67.9$, indicating that the time step violates the restriction and the model becomes numerically unstable.
+\begin{wrapfigure}{r}{0.43\textwidth}
+\vspace{-20pt}
+\centering
+\includegraphics[width=\linewidth]{images/stability_check.png}
+\caption{Stability investigation of the time stepping restriction.}
+\label{fig:stability-investigation}
+\vspace{-10pt}
+\end{wrapfigure}
+
+We tested the stability restriction described in Section 5 by running the same simulation with two different time steps:  $\Delta t = 0.5\Delta t_{\max}$ (stable), and $\Delta t = 1.5\Delta t_{\max}$ (unstable), illustrated in Figure \ref{fig:stability-investigation}. With the stable time step the solution remains finite and non-negative. Once the time step exceeds the theoretical maximum value the solution explodes and becomes non-finite at $t \approx 67.9$, indicating that the time step violates the restriction and the model becomes numerically unstable.
 
 Additionally, we repeated the simulation on a refined grid where $\Delta x$ and $\Delta y$ were halved, while choosing $\Delta t$ according to the stability restriction. We compared the final infected field $I(x,y,t_{\max})$ using the discrete 2-norm of the grid function (analogue $L^2$-norm), which describes the area weighted difference after interpolation of the fine-grid solution to the coarse grid. The difference measured was $1.35 \times 10^{-21}$, indicating that the model is insensitive to this grid refinement for the chosen parameters (Leveque, 2007).
 
-![Stability investigation of time stepping restriction](images/stability_check.png){#fig-stability-invesitgation fig-align="center" width="394"}
-
 # Parameter Studies
 
-A comparison of the infected population dynamics across the four scenarios is given in @fig-lineplot-population. It is evident that the worst-case scenario was characterised by a high $\beta$ and a low $\gamma$ (in Orange), while the best-case scenario (no outbreak) was characterised by the opposite conditions (in green).
+A comparison of the infected population dynamics across the four scenarios is given in @fig-lineplot-population. It is evident that the worst-case scenario was characterised by a high $\beta$ and a low $\gamma$ (in Orange), while the best-case scenario (no outbreak) was characterised by the opposite conditions (in Green).
 
 ![Comparison of Infected Population Dynamics Across Scenarios](images/lineplot_population_dynamics.png){#fig-lineplot-population fig-align="center" width="14.1cm"}
 
-In order to illustrate spatial evolution, all four scenarios were plotted as heat-maps. With each row representing a scenario and each column a time point. Each heatmap utilises its own scale to visualise the spatial spread of infection; it should be noted that row three ($\beta=0.1$, $\gamma=0.2$) demonstrates the least spread despite its visual output.
-
-![Spatial snapshots at selected time points for all scenarios](images/heatmap.png){#fig-spatial-heatmap fig-align="center" width="645"}
-
-The findings of @fig-lineplot-population and @fig-spatial-heatmap indicate that the transmission rate ($\beta$) significantly impacts the spread of the disease to a greater degree than the recovery rate ($\gamma$). This could also be demonstrated in @fig-comparison in the left plot, which shows that higher $\beta$ values lead to dramatically increased peak infections, while changes in $\gamma$ have minimal effect. Similarly, the time-to-boundary plot, on the right, demonstrates that $\beta$ primarily determines how quickly the infection spreads spatially, with the disease reaching boundaries fastest at high $\beta$, amd minimal impact of $\gamma$ values.
+In order to illustrate spatial evolution, all four scenarios were plotted as heat-maps. With each row representing a scenario and each column a time point. Each heatmap utilises its own scale to visualise the spatial spread of infection; it should be noted that row three ($\beta=0.1$, $\gamma=0.2$) demonstrates the least spread despite its visual output (see @fig-spatial-heatmap).
 
 ::: {#fig-comparison layout-ncol="2"}
 ![Peak of total infected](images/beta_gamma_vs_peak_I.png){#fig-peak-total-I}
@@ -156,6 +158,10 @@ The findings of @fig-lineplot-population and @fig-spatial-heatmap indicate that 
 
 Comparison of infection dynamics parameters
 :::
+
+The findings of @fig-lineplot-population and @fig-spatial-heatmap indicate that the transmission rate ($\beta$) significantly impacts the spread of the disease to a greater degree than the recovery rate ($\gamma$). This could also be demonstrated in @fig-comparison in the left plot, which shows that higher $\beta$ values lead to dramatically increased peak infections, while changes in $\gamma$ have minimal effect. Similarly, the time-to-boundary plot, on the right, demonstrates that $\beta$ primarily determines how quickly the infection spreads spatially, with the disease reaching boundaries fastest at high $\beta$, and minimal impact of $\gamma$ values.
+
+![Spatial snapshots at selected time points for all scenarios](images/heatmap.png){#fig-spatial-heatmap fig-align="center" width="645"}
 
 # References
 
