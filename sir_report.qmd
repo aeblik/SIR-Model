@@ -46,11 +46,11 @@ jupyter: python3
 
 # Introduction
 
-In this project we consider a spatial version of the Susceptible-Infectious-Recovered (SIR) model. ... Maybe not needed ?
+In this project we study a spatially extended SIR model to investigate the spatial spread of an infectious disease in dependence of model parameters and diffusion rates. Further analysis beyond this report can be found in the accompanying Jupyter Notebook.
 
 # Model Formulation
 
-We consider a spatially distributed population in two dimensions over time and model the spread of an infectious disease. The population density $N(x,y,t)$ is conserved and composed of three compartments: Susceptible $(S)$, Infectious $(I)$, and Recovered $(R)$. The PDE system is given by:
+We consider a spatially distributed population in two dimensions over time and model the spread of an infectious disease. The population density $N(x,y,t)$ is conserved globally and composed of three compartments: Susceptible $(S)$, Infectious $(I)$, and Recovered $(R)$. The PDE system is given by:
 
 \begin{align}
 \frac{\partial S}{\partial t} &= D_s \nabla^2 S -\beta \frac{S I}{N}, \tag{1}\\
@@ -67,34 +67,33 @@ With the following parameters:
 
 The infection term $\beta \frac{SI}{N}$ transfers individuals from $S$ to $I$, and the recovery term $\gamma I$ transfers individuals from $I$ to $R$. The diffusion terms in $S$ and $I$ model random movement of individuals, leading to the spatial spread of the disease.
 
-The spatial SIR model defined by equations 1 to 3 is a time-dependent, non-linear reaction-diffusion system. The laplacian operator $\nabla^2$ in the diffusion terms make the system second-order and the coupling term $\beta \frac{SI}{N}$ makes it non-linear, as the dependent variables $S$ and $I$ are mutliplied.
+The spatial SIR model defined by equations 1 to 3 is a time-dependent, non-linear reaction-diffusion system. The Laplacian operator $\nabla^2$ in the diffusion terms makes the system second-order and the coupling term $\beta \frac{SI}{N}$ makes it non-linear, as the dependent variables $S$ and $I$ are multiplied.
 
 # Model Assumptions and Choices
 
 To simulate the system, we make the following assumptions and choices:
 
--   Finite Difference Scheme: We employ the Forward-Time Central-Space (FTCS) scheme. This explicit method simulates the state at $t_i$ directly from the known values at $t_{i-1}$, while spatial derivatives ($\nabla^2$) are approximated using the central finite difference method.
--   Boundary Conditions: We assume an isolated population with no movement in or out of the defined space. This is enforced with Neumann boundary conditions (no-flux is implemented by equating boundary values to their neighbouring interior values) to the compartments $S$ and $I$ - $R$ does not diffuse.
+-   Finite Difference Scheme: We employ the Forward-Time Central-Space (FTCS) scheme (Rabbani et al., 2020). This explicit method simulates the state at $t_i$ directly from the known values at $t_{i-1}$, while spatial derivatives ($\nabla^2$) are approximated using the central finite difference method (Leveque, 2007).
+-   Boundary Conditions: We assume an isolated population with no movement in or out of the defined space. This is enforced with Neumann boundary conditions (no-flux is implemented by equating boundary values to their neighbouring interior values) to the compartments $S$ and $I$ - $R$ does not diffuse (Leveque, 2007).
 -   Initial Conditions: The model is initialized with a uniformly distributed susceptible population and a small localized concentration of infected individuals $(I)$ is planted in the center of the grid to simulate the outbreak.
 -   Parameter Choices: Model parameters are assumed to be constant. Separate diffusion coefficients allow to model different behaviours of Susceptible $(S)$ and Infected $(I)$ individuals. Parameter values are chosen based on the given typical values in the project description and varied to explore their influence on the model.
-
-CITATION LEVEQUE AND https://www.medrxiv.org/content/10.1101/2020.06.24.20139071v2.full
 
 # Discretisation
 
 Space is discretised on a uniform grid with spacings $h = \Delta x = \Delta y$ and time with step size $\Delta t$. The differential operators are approximated as follows:
 
--   Spatial Discretisaton: The Laplacian operator $\nabla^2 u$ in the diffusion term is approximated using a five-point stencil, which is second-order accurate. For any grid point (i,j):
+-   Spatial Discretisation: The Laplacian operator $\nabla^2 u$ in the diffusion term is approximated using a five-point stencil, which is second-order accurate. For any grid point (i,j):
 
 $$
-\Delta^2u_{i,j} \approx \frac{u_{i+1,j}+u_{i-1,j}+ u_{i,j+1}+u_{i,j-1}-4u_{i,j}}{h^2}
+\nabla^2u_{i,j} \approx \frac{u_{i+1,j}+u_{i-1,j}+ u_{i,j+1}+u_{i,j-1}-4u_{i,j}}{h^2}
 $$
 
--   Time Stepping: We use the explicit Forward Euler method to advance the solution in time. Following the general discrete-time formulation $x_{n+1}=f(x_n)$ the state at the next time step is computed directly from the current values: $$
+-   Time Stepping: We use the explicit Forward Euler method to advance the solution in time. Following the general discrete-time formulation $x_{n+1}=f(x_n)$ the state at the next time step is computed directly from the current values: 
+    $$
     u^{n+1} = u^n + \Delta t \cdot \frac{\partial u^n}{\partial t}
     $$
 
-Numerical boundary conditions are enforced by the previosuly mentioned Neumann boundary conditions.
+Numerical boundary conditions are enforced by the previously mentioned Neumann boundary conditions.
 
 # Stability and Error Analysis
 
@@ -102,7 +101,9 @@ Numerical boundary conditions are enforced by the previosuly mentioned Neumann b
 
 -   Stability Condition: As an explicit method, the FTCS scheme is only conditionally stable. To ensure numerical stability, the time step $\Delta t$ is constrained by the diffusion limit (the time step must be sufficiently small relative to the spatial grid size): $\Delta t \le \frac{1}{2D\left(\frac{1}{\Delta x^2} + \frac{1}{\Delta y^2}\right)}$
 
-    This restriction follows from a method of lines stability analysis. Spatial discretisation of the diffusion term leads to a linear ODE system $\dot{\mathbf{u}} = D\,L\,\mathbf{u}$, where $L$ is the discrete Laplacian matrix. For Forward Eulor time integration is stable only if the condition $1 + \Delta t\,D\,\lambda \in [-1,1]$ is satisfied for all eigenvalues $\lambda$ of $L$, whose largest magnited scales as $4(\Delta x^{-2} + \Delta y^{-2})$, yielding the stated restriction on $\Delta t$. In our implementation an additional safety factor of $0.5$ to this limit.
+    This restriction follows from a method of lines stability analysis. Spatial discretisation of the diffusion term leads to a linear ODE system $\dot{\mathbf{u}} = D\,L\,\mathbf{u}$, where $L$ is the discrete Laplacian matrix. Forward Euler time integration is stable only if the condition $1 + \Delta t\,D\,\lambda \in [-1,1]$ is satisfied for all eigenvalues $\lambda$ of $L$, whose largest magnitude scales as $4(\Delta x^{-2} + \Delta y^{-2})$, yielding the stated restriction on $\Delta t$. In our implementation an additional safety factor of $0.5$ was applied to this limit.
+
+(Leveque, 2007)
 
 # Implementation
 
@@ -130,23 +131,23 @@ The simulation was initiated by the `run_simulation` function, which combined al
 
 # Stability Investigation
 
-![Stability investigation by increasing the time step](images/stability_check.png){#fig-stability-invesitgation fig-align="center" width="394"}
+We tested the stability restriction described in Section 5 by running the same simulation with two different time steps:  $\Delta t = 0.5\Delta t_{\max}$ (stable), and $\Delta t = 1.5\Delta t_{\max}$ (unstable), illustrated in @fig-stability-invesitgation. With the stable time step the solution remains finite and non-negative. Once the time step exceeds the theoretical maximum value the solution explodes and becomes non-finite at $t \approx 67.9$, indicating that the time step violates the restriction and the model becomes numerically unstable.
 
-dt_max detlat
+Additionally, we repeated the simulation on a refined grid where $\Delta x$ and $\Delta y$ were halved, while choosing $\Delta t$ according to the stability restriction. We compared the final infected field $I(x,y,t_{\max})$ using the discrete 2-norm of the grid function (analogue $L^2$-norm), which describes the area weighted difference after interpolation of the fine-grid solution to the coarse grid. The difference measured was $1.35 \times 10^{-21}$, indicating that the model is insensitive to this grid refinement for the chosen parameters (Leveque, 2007).
 
-Grid x 0.15 (lösung nicht mehr stimmen)
+![Stability investigation of time stepping restriction](images/stability_check.png){#fig-stability-invesitgation fig-align="center" width="394"}
 
 # Parameter Studies
 
-A comparison of the infected population dynamics across the four scenarios is given in @fig-lineplot-population. It is evident that the worst-case scenario was characterised by a high Beta and a low game (in Orange), while the best-case scenario was characterised by the opposite conditions (in green).
+A comparison of the infected population dynamics across the four scenarios is given in @fig-lineplot-population. It is evident that the worst-case scenario was characterised by a high $\beta$ and a low $\gamma$ (in Orange), while the best-case scenario (no outbreak) was characterised by the opposite conditions (in green).
 
 ![Comparison of Infected Population Dynamics Across Scenarios](images/lineplot_population_dynamics.png){#fig-lineplot-population fig-align="center" width="14.1cm"}
 
-In order to illustrate spatial evolution, all four scenarios were plotted as heat-maps. With each row representing a scenario and each column a time point. Each heatmap utilises its own scale to visualise the spatial spread of infection; it should be noted that row three (β=0.1, γ=0.2) demonstrates the least spread despite its visual output.
+In order to illustrate spatial evolution, all four scenarios were plotted as heat-maps. With each row representing a scenario and each column a time point. Each heatmap utilises its own scale to visualise the spatial spread of infection; it should be noted that row three ($\beta=0.1$, $\gamma=0.2$) demonstrates the least spread despite its visual output.
 
 ![Spatial snapshots at selected time points for all scenarios](images/heatmap.png){#fig-spatial-heatmap fig-align="center" width="645"}
 
-The findings of @fig-lineplot-population and @fig-spatial-heatmap indicate that the transmission rate (β) significantly impacts the spread of the disease to a greater degree than the recovery rate (γ). This could also be demonstrated in @fig-comparison in the left plot, which shows that higher β values lead to dramatically increased peak infections, while changes in γ have minimal effect. Similarly, the time-to-boundary plot, on the right, demonstrates that β primarily determines how quickly the infection spreads spatially, with the disease reaching boundaries fastest at high β regardless of γ values."
+The findings of @fig-lineplot-population and @fig-spatial-heatmap indicate that the transmission rate ($\beta$) significantly impacts the spread of the disease to a greater degree than the recovery rate ($\gamma$). This could also be demonstrated in @fig-comparison in the left plot, which shows that higher $\beta$ values lead to dramatically increased peak infections, while changes in $\gamma$ have minimal effect. Similarly, the time-to-boundary plot, on the right, demonstrates that $\beta$ primarily determines how quickly the infection spreads spatially, with the disease reaching boundaries fastest at high $\beta$, amd minimal impact of $\gamma$ values.
 
 ::: {#fig-comparison layout-ncol="2"}
 ![Peak of total infected](images/beta_gamma_vs_peak_I.png){#fig-peak-total-I}
@@ -158,4 +159,12 @@ Comparison of infection dynamics parameters
 
 # References
 
-LeVeque, R. J. (2007). Finite Difference Methods for Ordinary and Partial Differential Equations. Society for Industrial and Applied Mathematics. https://doi.org/10.1137/1.9780898717839 Rabbani, H. S., Osei-Bonsu, K., Abbasi, J., Osei-Bonsu, P. K., & Seers, T. D. (2020). Modelling The Spread of COVID-19 Using The Fundamental Principles of Fluid Dynamics (p. 2020.06.24.20139071). medRxiv. https://doi.org/10.1101/2020.06.24.20139071
+## Literature
+
+LeVeque, R. J. (2007). Finite Difference Methods for Ordinary and Partial Differential Equations. Society for Industrial and Applied Mathematics. https://doi.org/10.1137/1.9780898717839 
+
+Rabbani, H. S., Osei-Bonsu, K., Abbasi, J., Osei-Bonsu, P. K., & Seers, T. D. (2020). Modelling The Spread of COVID-19 Using The Fundamental Principles of Fluid Dynamics (p. 2020.06.24.20139071). medRxiv. https://doi.org/10.1101/2020.06.24.20139071
+
+## Use of AI tools
+
+Github Copilot and Anthropic's Claude model were used in supporting manner for code development, debugging and visualization.
