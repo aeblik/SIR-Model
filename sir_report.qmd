@@ -125,13 +125,12 @@ All populations were then updated according to $S^{n+1} = S^n + dt \cdot (D_s \n
 The simulation was initiated by the `run_simulation` function, which combined all the model's components. This function initialised the spatial grids with the defined initial conditions and set the epidemiological parameters ($\beta$ and $\gamma$) and the diffusion coefficients ($D_s$ and $D_i$). Four scenarios were simulated over 365 days (\~73,000 steps). Snapshots were saved every 50 steps for analysis.
 
 | Scenario 1 | Scenario 2 | Scenario 3 | Scenario 4 |
-|----|----|----|----|
-| low $\beta$  low $\gamma$ | high $\beta$ low $\gamma$ | low $\beta$ high $\gamma$ | high $\beta$  high $\gamma$ |
+|------------------|------------------|------------------|------------------|
+| low $\beta$ low $\gamma$ | high $\beta$ low $\gamma$ | low $\beta$ high $\gamma$ | high $\beta$ high $\gamma$ |
 
 # Stability Investigation
 
-
-![Stability investigation by increasing the time step](images/stability_check.png.png){fig-align="center"}
+![Stability investigation by increasing the time step](images/stability_check.png){#fig-stability-invesitgation fig-align="center" width="394"}
 
 dt_max detlat
 
@@ -139,20 +138,24 @@ Grid x 0.15 (lösung nicht mehr stimmen)
 
 # Parameter Studies
 
-The following plot shows the impact of different transmission ($\beta$) and recovery ($\gamma$) rates on the spatial dynamics. Each row shows a different scenario. These scenarios are described in the section "Simulation of the PDE". Each column shows a different day. The countdown begins at day 0 and ends at day 365. Each scenario begins with a small number of infected individuals in the middle.
+A comparison of the infected population dynamics across the four scenarios is given in @fig-lineplot-population. It is evident that the worst-case scenario was characterised by a high Beta and a low game (in Orange), while the best-case scenario was characterised by the opposite conditions (in green).
 
-The plot clearly shows that when transmission is low and the recovery rate is high, the number of infected people on the last day was the highest. It can be observed that a high transmission causes the disease to spread faster towards the edges, while a low transmission keeps the infected population for a longer time concentrated in the middle.
+![Comparison of Infected Population Dynamics Across Scenarios](images/lineplot_population_dynamics.png){#fig-lineplot-population fig-align="center" width="14.1cm"}
 
-![Spatial snapshots at selected time points for all scenarios](images/heatmap.png){fig-align="center"}
+In order to illustrate spatial evolution, all four scenarios were plotted as heat-maps. With each row representing a scenario and each column a time point. Each heatmap utilises its own scale to visualise the spatial spread of infection; it should be noted that row three (β=0.1, γ=0.2) demonstrates the least spread despite its visual output.
 
-+ Lineplot
+![Spatial snapshots at selected time points for all scenarios](images/heatmap.png){#fig-spatial-heatmap fig-align="center" width="645"}
 
-Heatmap beta vs gamma + Time to reach boundary
+The findings of @fig-lineplot-population and @fig-spatial-heatmap indicate that the transmission rate (β) significantly impacts the spread of the disease to a greater degree than the recovery rate (γ). This could also be demonstrated in @fig-comparison in the left plot, which shows that higher β values lead to dramatically increased peak infections, while changes in γ have minimal effect. Similarly, the time-to-boundary plot, on the right, demonstrates that β primarily determines how quickly the infection spreads spatially, with the disease reaching boundaries fastest at high β regardless of γ values."
+
+::: {#fig-comparison layout-ncol="2"}
+![Peak of total infected](images/beta_gamma_vs_peak_I.png){#fig-peak-total-I}
+
+![Time to reach boundary](images/time_to_reach_boundary.png){#fig-test}
+
+Comparison of infection dynamics parameters
+:::
 
 # References
 
-LeVeque, R. J. (2007). Finite Difference Methods for Ordinary and Partial Differential Equations. Society for Industrial and Applied Mathematics. https://doi.org/10.1137/1.9780898717839
-Rabbani, H. S., Osei-Bonsu, K., Abbasi, J., Osei-Bonsu, P. K., & Seers, T. D. (2020). Modelling The Spread of COVID-19 Using The Fundamental Principles of Fluid Dynamics (p. 2020.06.24.20139071). medRxiv. https://doi.org/10.1101/2020.06.24.20139071
-
-
-
+LeVeque, R. J. (2007). Finite Difference Methods for Ordinary and Partial Differential Equations. Society for Industrial and Applied Mathematics. https://doi.org/10.1137/1.9780898717839 Rabbani, H. S., Osei-Bonsu, K., Abbasi, J., Osei-Bonsu, P. K., & Seers, T. D. (2020). Modelling The Spread of COVID-19 Using The Fundamental Principles of Fluid Dynamics (p. 2020.06.24.20139071). medRxiv. https://doi.org/10.1101/2020.06.24.20139071
